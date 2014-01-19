@@ -143,7 +143,7 @@ namespace LIFX
             setpacket.saturation = saturation;
             setpacket.brightness = brightness;
             setpacket.kelvin = kelvin;
-            setpacket.fadeTime = fade;
+            setpacket.fadeTime = ((fade) * 225) ^ 2;
             setpacket.site = GateWayMac;
             setpacket.size = 49;
             foreach (LIFXBulb bulb in bulbs)
