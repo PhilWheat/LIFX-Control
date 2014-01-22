@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace LIFX
 {
-enum INTERFACE : byte
-{
-  SOFT_AP = 1, // i.e. act as an access point
-  STATION = 2  // i.e. connect to an existing access point
-}
+    public enum INTERFACE : byte
+    {
+        SOFT_AP = 1, // i.e. act as an access point
+        STATION = 2  // i.e. connect to an existing access point
+    }
 
-    enum SECURITY_PROTOCOL : byte
+    public enum SECURITY_PROTOCOL : byte
     {
        OPEN           = 1,
        WEP_PSK        = 2, // Not officially supported
@@ -22,7 +22,7 @@ enum INTERFACE : byte
        WPA2_TKIP_PSK  = 6,
        WPA2_MIXED_PSK = 7
     }
-    enum SERVICE : byte
+    public enum SERVICE : byte
     {
       UDP = 1,
       TCP = 2
@@ -32,7 +32,7 @@ enum INTERFACE : byte
       UP = 0,
       DOWN = 1
     }
-    enum ONOFF : byte
+    public enum ONOFF : byte
     {
       OFF = 0,
       ON  = 1
@@ -46,7 +46,7 @@ enum INTERFACE : byte
         public byte[] month;
         public byte year;
     }
-    class LIFXPacketFactory
+    public class LIFXPacketFactory
     {
         public LIFXPacket Getpacket()
         {
@@ -266,7 +266,7 @@ enum INTERFACE : byte
     }
 
     [Serializable]
-    class LIFXPacket
+    public class LIFXPacket
     {
         public LIFXPacket()
         {
@@ -963,14 +963,14 @@ enum INTERFACE : byte
     {
         // Packet type 0x6b - bulb to app
         // 52 byte payload
-        public ushort hue;
-        public ushort saturation;
-        public ushort brightness;
-        public ushort kelvin;
-        public ushort dim;
-        public ushort power;
+        public UInt16 hue;
+        public UInt16 saturation;
+        public UInt16 brightness;
+        public UInt16 kelvin;
+        public UInt16 dim;
+        public UInt16 power;
         public string bulb_label;
-        public ulong tags;
+        public UInt64 tags;
 
         public LIFX_LightStatus()
         {

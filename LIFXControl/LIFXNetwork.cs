@@ -9,14 +9,24 @@ using System.Threading;
 
 namespace LIFX
 {
-    enum NetworkState { UnInitialized, Discovery, Initialized };
+    public enum NetworkState { UnInitialized, Discovery, Initialized };
 
-    class LIFXBulb
+    public class LIFXBulb
     {
         public byte[] bulbMac;
         public IPEndPoint bulbEndpoint;
+        public UInt16 hue;
+        public UInt16 saturation;
+        public UInt16 brightness;
+        public UInt16 kelvin;
+        public UInt16 time_delay;
+        public UInt16 power;
+        public UInt16 dim;
+        public byte power_state;
+        public string label;
+        public UInt64 tags;
     }
-    class LIFXNetwork
+    public class LIFXNetwork
     {
         public NetworkState State = NetworkState.UnInitialized;
         IPEndPoint GateWayEndPoint;
@@ -31,7 +41,7 @@ namespace LIFX
         int readBytes = 0;
 
         public List<LIFXBulb> bulbs = new List<LIFXBulb>();
-
+        char[] charsToTrim = { '\0'};
 
         public void DiscoverNetwork()
         {
@@ -57,6 +67,7 @@ namespace LIFX
             byte[] receivebytes = receivingUdpClient.Receive(ref RemoteIpEndPoint);
             LIFXPacket ReceivedPacket = PacketFactory.Getpacket(receivebytes);
 
+
             GateWayMac = ReceivedPacket.site;
             GateWayAddress = RemoteIpEndPoint.Address;
             InPackets.Enqueue(ReceivedPacket);
@@ -77,6 +88,7 @@ namespace LIFX
                 {
                     bulb = new LIFXBulb();
                     bulb.bulbMac = ReceivedPacket.target_mac_address;
+                    //bulb.label = (LIFX_LightStatus) ReceivedPacket.bulb_label;
                     bulb.bulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);
                     bulbs.Add(bulb); 
                 }
@@ -124,6 +136,15 @@ namespace LIFX
 
                 readBytes = socket.Receive(readBuffer);
                 InPackets.Enqueue( PacketFactory.Getpacket(readBuffer));
+                LIFX_LightStatus packet = (LIFX_LightStatus)PacketFactory.Getpacket(readBuffer);
+                bulb.label = packet.bulb_label.TrimEnd(charsToTrim);
+                bulb.hue = packet.hue;
+                bulb.saturation = packet.saturation;
+                bulb.kelvin = packet.kelvin;
+                bulb.brightness = packet.brightness;
+                bulb.power = packet.power;
+                bulb.dim = packet.dim;
+                bulb.tags = packet.tags;
 
             }
 
