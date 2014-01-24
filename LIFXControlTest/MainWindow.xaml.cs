@@ -37,14 +37,19 @@ namespace LIFXControlTest
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //if (Network.State != LIFX.NetworkState.Initialized)
-            //{
+            if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+            {
+
                 Network.DiscoverNetwork();
                 Change.IsEnabled = true;
                 ConnectBtn.Content = "Connected";
                 Status.Text = "Number of Bulbs: " + Network.bulbs.Count();
-            //}
-            Network.Inventory();
+                Network.Inventory();
+            }
+            else
+            {
+                Status.Text = "Not connected to a network";
+            }
 
 
         }

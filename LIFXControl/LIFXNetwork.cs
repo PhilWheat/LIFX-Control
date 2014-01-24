@@ -51,9 +51,16 @@ namespace LIFX
             LIFX_GetPANGateWay discoveryPacket = (LIFX_GetPANGateWay)PacketFactory.Getpacket(0x02);
             discoveryPacket.protocol = 21504;
 
+            // Determine local subnet
+            string localIP = LocalIPAddress();
+            var pos = localIP.LastIndexOf('.');
+            if (pos >= 0)
+                localIP = localIP.Substring(0, pos);
+            localIP = localIP + ".255";
+
             // Set up UDP connection.
             Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPAddress send_to_address = IPAddress.Parse("192.168.1.255");
+            IPAddress send_to_address = IPAddress.Parse(localIP);
             IPEndPoint sending_end_point = new IPEndPoint(send_to_address, 56700);
 
             byte [] sendData = PacketFactory.PacketToBuffer(discoveryPacket);
@@ -192,6 +199,22 @@ namespace LIFX
                 socket.Send(PacketFactory.PacketToBuffer(outPacket));
                 socket.Close();
             }
+        }
+
+        public string LocalIPAddress()
+        {
+            IPHostEntry host;
+            string localIP = "";
+            host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    localIP = ip.ToString();
+                    break;
+                }
+            }
+            return localIP;
         }
 
     }
