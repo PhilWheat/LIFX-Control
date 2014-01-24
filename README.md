@@ -16,3 +16,6 @@ Storage and management of sequences.
 Integration with varied sensors.
 Support for Win32 apps, WinRT (Windows 8.1 and Windows Phone 8), and .Net Micro Frameworks.
 Example programs for each.
+
+If you find issues, please enter them here.  Also, please include how many bulbs are active when you run into your issue.
+
