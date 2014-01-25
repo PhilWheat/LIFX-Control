@@ -47,6 +47,7 @@ namespace LIFX
         public void DiscoverNetwork()
         {
             State = NetworkState.Discovery;
+            bulbs.Clear();
 
             // prep a discovery packet
             LIFX_GetPANGateWay discoveryPacket = (LIFX_GetPANGateWay)PacketFactory.Getpacket(0x02);
@@ -90,14 +91,14 @@ namespace LIFX
                 ReceivedPacket = PacketFactory.Getpacket(receivebytes);
                 InPackets.Enqueue(ReceivedPacket);
                 
-                if (!bulbs.Any(p=>p.bulbMac.SequenceEqual(ReceivedPacket.target_mac_address)))
-                {
+                //if (!bulbs.Any(p=>p.bulbMac.SequenceEqual(ReceivedPacket.target_mac_address)))
+                //{
                         bulb = new LIFXBulb();
                         bulb.bulbMac = ReceivedPacket.target_mac_address;
                         bulb.bulbGateWay = ReceivedPacket.site;
                         bulb.bulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);
                         bulbs.Add(bulb);
-                }
+                //}
                 Thread.Sleep(100);
             }
 

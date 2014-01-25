@@ -45,6 +45,12 @@ namespace LIFXControlTest
                 ConnectBtn.Content = "Connected";
                 Status.Text = "Number of Bulbs: " + Network.bulbs.Count();
                 Network.Inventory();
+                string bulbList = "";
+                foreach (LIFXBulb bulb in Network.bulbs)
+                {
+                    bulbList += bulb.label + "   :   " + BitConverter.ToString(bulb.bulbGateWay) + "   :   " + BitConverter.ToString(bulb.bulbMac) + "   :   " + bulb.bulbEndpoint.Address.ToString() + System.Environment.NewLine;
+                }
+                GeneralInfo.Text = bulbList;
             }
             else
             {
