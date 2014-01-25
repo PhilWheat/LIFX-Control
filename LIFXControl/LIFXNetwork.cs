@@ -91,14 +91,14 @@ namespace LIFX
                 InPackets.Enqueue(ReceivedPacket);
 
                 
-                if (!bulbs.Any(p=>p.bulbMac.SequenceEqual(ReceivedPacket.target_mac_address)))
-                {
+                //if (!bulbs.Any(p=>p.bulbMac.SequenceEqual(ReceivedPacket.target_mac_address)))
+                //{
                     bulb = new LIFXBulb();
                     bulb.bulbMac = ReceivedPacket.target_mac_address;
                     //bulb.label = (LIFX_LightStatus) ReceivedPacket.bulb_label;
                     bulb.bulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);
                     bulbs.Add(bulb); 
-                }
+                //}
                 Thread.Sleep(100);
             }
 
