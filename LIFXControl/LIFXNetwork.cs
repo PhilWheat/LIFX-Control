@@ -14,6 +14,7 @@ namespace LIFX
     public class LIFXBulb
     {
         public byte[] bulbMac;
+        public byte[] bulbGateWay;
         public IPEndPoint bulbEndpoint;
         public UInt16 hue;
         public UInt16 saturation;
@@ -70,16 +71,15 @@ namespace LIFX
             // Now listen for the response
             IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
             UdpClient receivingUdpClient = new UdpClient(56700);
-
             byte[] receivebytes = receivingUdpClient.Receive(ref RemoteIpEndPoint);
             LIFXPacket ReceivedPacket = PacketFactory.Getpacket(receivebytes);
-
 
             GateWayMac = ReceivedPacket.site;
             GateWayAddress = RemoteIpEndPoint.Address;
             InPackets.Enqueue(ReceivedPacket);
             LIFXBulb bulb = new LIFXBulb();
             bulb.bulbMac = ReceivedPacket.target_mac_address;
+            bulb.bulbGateWay = ReceivedPacket.site;
             bulb.bulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);
             bulbs.Add(bulb);
             Thread.Sleep(100);
@@ -89,23 +89,21 @@ namespace LIFX
                 receivebytes = receivingUdpClient.Receive(ref RemoteIpEndPoint);
                 ReceivedPacket = PacketFactory.Getpacket(receivebytes);
                 InPackets.Enqueue(ReceivedPacket);
-
                 
-                //if (!bulbs.Any(p=>p.bulbMac.SequenceEqual(ReceivedPacket.target_mac_address)))
-                //{
-                    bulb = new LIFXBulb();
-                    bulb.bulbMac = ReceivedPacket.target_mac_address;
-                    //bulb.label = (LIFX_LightStatus) ReceivedPacket.bulb_label;
-                    bulb.bulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);
-                    bulbs.Add(bulb); 
-                //}
+                if (!bulbs.Any(p=>p.bulbMac.SequenceEqual(ReceivedPacket.target_mac_address)))
+                {
+                        bulb = new LIFXBulb();
+                        bulb.bulbMac = ReceivedPacket.target_mac_address;
+                        bulb.bulbGateWay = ReceivedPacket.site;
+                        bulb.bulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);
+                        bulbs.Add(bulb);
+                }
                 Thread.Sleep(100);
             }
 
-
             State = NetworkState.Initialized;
-
             sending_socket.Close();
+            receivingUdpClient.Close();
             InPackets.Clear();
 
 
