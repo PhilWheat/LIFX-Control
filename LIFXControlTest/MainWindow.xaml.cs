@@ -32,6 +32,7 @@ namespace LIFXControlTest
             if (Network.State != NetworkState.Initialized)
             {
                 Change.IsEnabled = false;
+                Cycle.IsEnabled = false;
             }
         }
 
@@ -41,8 +42,11 @@ namespace LIFXControlTest
             {
 
                 Network.DiscoverNetwork();
+                PacketInfo.Text = Network.InPackets.Count + " Discovery Packets Received";
+                Network.InPackets.Clear();
                 Network.Inventory();
-                Change.IsEnabled = true;
+                PacketInfo.Text = PacketInfo.Text + System.Environment.NewLine + Network.InPackets.Count + " Inventory Packets Received";
+                Change.IsEnabled = true; Cycle.IsEnabled = true;
                 ConnectBtn.Content = "Connected";
                 Status.Text = "Number of Bulbs: " + Network.bulbs.Count();
                 string bulbList = "";

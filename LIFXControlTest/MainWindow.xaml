@@ -19,6 +19,7 @@
         <Button x:Name="Cycle" Content="Color Cycle" HorizontalAlignment="Left" Margin="159,213,0,0" VerticalAlignment="Top" Width="75" Click="Cycle_Click"/>
         <TextBox x:Name="CycleValue" HorizontalAlignment="Left" Height="23" Margin="257,213,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" Width="120"/>
         <TextBox x:Name="GeneralInfo" HorizontalAlignment="Left" Margin="31,249,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox x:Name="PacketInfo" HorizontalAlignment="Left" Height="76" Margin="278,72,0,0" TextWrapping="Wrap" Text="Packets" VerticalAlignment="Top" Width="202" RenderTransformOrigin="0.463,0.521"/>
 
     </Grid>
 

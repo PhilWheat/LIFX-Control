@@ -34,8 +34,8 @@ namespace LIFX
         IPAddress GateWayAddress;
         byte[] GateWayMac;
 
-        Queue<LIFXPacket> OutPackets = new Queue<LIFXPacket>();
-        Queue<LIFXPacket> InPackets = new Queue<LIFXPacket>();
+        public Queue<LIFXPacket> OutPackets = new Queue<LIFXPacket>();
+        public Queue<LIFXPacket> InPackets = new Queue<LIFXPacket>();
         LIFXPacketFactory PacketFactory = new LIFXPacketFactory();
 
         byte[] readBuffer = new byte[200];
@@ -106,9 +106,7 @@ namespace LIFX
             State = NetworkState.Initialized;
             sending_socket.Close();
             receivingUdpClient.Close();
-            InPackets.Clear();
-
-
+            //InPackets.Clear();
         }
 
         public void Inventory()
