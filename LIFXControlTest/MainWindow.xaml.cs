@@ -41,10 +41,10 @@ namespace LIFXControlTest
             {
 
                 Network.DiscoverNetwork();
+                Network.Inventory();
                 Change.IsEnabled = true;
                 ConnectBtn.Content = "Connected";
                 Status.Text = "Number of Bulbs: " + Network.bulbs.Count();
-                Network.Inventory();
                 string bulbList = "";
                 foreach (LIFXBulb bulb in Network.bulbs)
                 {

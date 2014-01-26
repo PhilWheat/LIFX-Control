@@ -87,18 +87,19 @@ namespace LIFX
             while (receivingUdpClient.Available > 0)
             {
                 // We've got what we need, just clean up any additional packets.
+                // This can happen if there is more than one bulb acting as a gateway.
                 receivebytes = receivingUdpClient.Receive(ref RemoteIpEndPoint);
                 ReceivedPacket = PacketFactory.Getpacket(receivebytes);
                 InPackets.Enqueue(ReceivedPacket);
                 
-                //if (!bulbs.Any(p=>p.bulbMac.SequenceEqual(ReceivedPacket.target_mac_address)))
-                //{
+                if (!bulbs.Any(p=>p.bulbMac.SequenceEqual(ReceivedPacket.target_mac_address)))
+                {
                         bulb = new LIFXBulb();
                         bulb.bulbMac = ReceivedPacket.target_mac_address;
                         bulb.bulbGateWay = ReceivedPacket.site;
                         bulb.bulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);
                         bulbs.Add(bulb);
-                //}
+                }
                 Thread.Sleep(100);
             }
 
@@ -129,7 +130,7 @@ namespace LIFX
             foreach (LIFXBulb bulb in bulbs)
             {
 
-                SendPacket.target_mac_address = bulb.bulbMac;
+                //SendPacket.target_mac_address = bulb.bulbMac;
                 if (!(bulb.bulbEndpoint == GateWayEndPoint))
                 {
                     socket.Close();
@@ -153,11 +154,36 @@ namespace LIFX
                 bulb.tags = packet.tags;
 
             }
+            Thread.Sleep(100);
 
             while (socket.Available > 0)
             {
+                LIFXBulb bulb = new LIFXBulb();
                 readBytes = socket.Receive(readBuffer);
-                InPackets.Enqueue(PacketFactory.Getpacket(readBuffer));
+                try
+                {
+                    LIFX_LightStatus packet = (LIFX_LightStatus)PacketFactory.Getpacket(readBuffer);
+
+                    if (!bulbs.Any(p => p.bulbMac.SequenceEqual(packet.target_mac_address)))
+                    {
+                        bulb = new LIFXBulb();
+                        bulb.bulbGateWay = packet.site;
+                        bulb.bulbMac = packet.target_mac_address;
+                        bulb.bulbEndpoint = GateWayEndPoint;
+                        bulb.label = packet.bulb_label.TrimEnd(charsToTrim);
+                        bulb.hue = packet.hue;
+                        bulb.saturation = packet.saturation;
+                        bulb.kelvin = packet.kelvin;
+                        bulb.brightness = packet.brightness;
+                        bulb.power = packet.power;
+                        bulb.dim = packet.dim;
+                        bulb.tags = packet.tags;
+                        bulbs.Add(bulb);
+                    }
+                    InPackets.Enqueue(PacketFactory.Getpacket(readBuffer));
+                }
+                catch (Exception e)
+                { }
             }
             socket.Close();
 
