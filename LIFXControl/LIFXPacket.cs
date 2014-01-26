@@ -212,7 +212,7 @@ namespace LIFX
                     packet = new LIFX_DisableFactoryTestMode();
                 break;
                 default:
-                  throw new NotImplementedException();
+                    return null;
                 break;
             }
             packet.packet_type = packetType;
@@ -934,7 +934,7 @@ namespace LIFX
         }
 
     }
-    class LIFX_SetDimRelative : LIFXPacket
+    public class LIFX_SetDimRelative : LIFXPacket
     {
         // Packet type 0x69 - app to bulb
         // 6 byte payload
@@ -959,7 +959,7 @@ namespace LIFX
         }
 
     }
-    class LIFX_LightStatus : LIFXPacket
+    public class LIFX_LightStatus : LIFXPacket
     {
         // Packet type 0x6b - bulb to app
         // 52 byte payload

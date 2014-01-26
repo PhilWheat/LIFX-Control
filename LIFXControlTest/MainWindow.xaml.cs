@@ -44,10 +44,13 @@ namespace LIFXControlTest
                 Network.DiscoverNetwork();
                 PacketInfo.Text = Network.InPackets.Count + " Discovery Packets Received";
                 Network.InPackets.Clear();
-                Network.Inventory();
+                if (Network.State == NetworkState.Initialized)
+                {
+                    Network.Inventory();
+                    Change.IsEnabled = true; Cycle.IsEnabled = true;
+                    ConnectBtn.Content = "Connected";
+                }
                 PacketInfo.Text = PacketInfo.Text + System.Environment.NewLine + Network.InPackets.Count + " Inventory Packets Received";
-                Change.IsEnabled = true; Cycle.IsEnabled = true;
-                ConnectBtn.Content = "Connected";
                 Status.Text = "Number of Bulbs: " + Network.bulbs.Count();
                 string bulbList = "";
                 foreach (LIFXBulb bulb in Network.bulbs)
