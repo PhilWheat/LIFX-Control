@@ -53,12 +53,12 @@ namespace LIFXControlTest
                 }
                 PacketInfo.Text = PacketInfo.Text + System.Environment.NewLine + Network.InPackets.Count + " Inventory Packets Received";
                 Status.Text = "Number of Bulbs: " + Network.bulbs.Count();
-                string bulbList = "";
+                bulbListBox.Items.Clear();
                 foreach (LIFXBulb bulb in Network.bulbs)
                 {
-                    bulbList += bulb.label + "   :   " + BitConverter.ToString(bulb.bulbGateWay) + "   :   " + BitConverter.ToString(bulb.bulbMac) + "   :   " + bulb.bulbEndpoint.Address.ToString() + System.Environment.NewLine;
+                    bulbListBox.Items.Add(bulb);
                 }
-                GeneralInfo.Text = bulbList;
+                bulbListBox.SelectAll();
             }
             else
             {
@@ -70,7 +70,12 @@ namespace LIFXControlTest
 
         private void Change_Click(object sender, RoutedEventArgs e)
         {
-            Network.SetAllBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), Convert.ToUInt16(PacketDelay.Text));
+            //Network.SetAllBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), Convert.ToUInt16(PacketDelay.Text));
+            foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+            {
+                Network.SetBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), bulb);
+                Thread.Sleep(Convert.ToUInt16(PacketDelay.Text));
+            }
         }
 
         private void Cycle_Click(object sender, RoutedEventArgs e)
@@ -85,7 +90,12 @@ namespace LIFXControlTest
                 for (int i = 0; i < 65500; i += step)
                 {
                     // Note, overriding fade value here - just to smooth out the color transitions.
-                    Network.SetAllBulbValues(Convert.ToUInt16(i), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), 100, Convert.ToUInt16(PacketDelay.Text));
+                    
+                    foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+                    {
+                        Network.SetBulbValues(Convert.ToUInt16(i), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), 100, bulb);
+                        Thread.Sleep(Convert.ToUInt16(PacketDelay.Text));
+                    }
                     CycleValue.Text = i.ToString();
 
                     Thread.Sleep(cycleDelay);
@@ -97,7 +107,11 @@ namespace LIFXControlTest
         {
             if (e.Key == Key.Enter)
             {
-                Network.SetAllBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), Convert.ToUInt16(PacketDelay.Text));
+                foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+                {
+                    Network.SetBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), bulb);
+                    Thread.Sleep(Convert.ToUInt16(PacketDelay.Text));
+                }
             }
         }
 

@@ -26,6 +26,11 @@ namespace LIFX
         public byte power_state;
         public string label;
         public UInt64 tags;
+
+        public override string ToString()
+        {
+            return label + "   :   " + BitConverter.ToString(bulbGateWay) + "   :   " + BitConverter.ToString(bulbMac) + "   :   " + bulbEndpoint.Address.ToString();
+        }
     }
 
     public class LIFXNetwork
@@ -221,6 +226,19 @@ namespace LIFX
                 SendPacket(bulb, setpacket);
                 Thread.Sleep(100);
             }
+        }
+        public void SetBulbValues(UInt16 hue, UInt16 saturation, UInt16 brightness, UInt16 kelvin, UInt32 fade, LIFXBulb bulb)
+        {
+            LIFX_SetLightColor setpacket = (LIFX_SetLightColor)PacketFactory.Getpacket(0x66);
+            setpacket.hue = hue;
+            setpacket.saturation = saturation;
+            setpacket.brightness = brightness;
+            setpacket.kelvin = kelvin;
+            setpacket.fadeTime = ((fade) * 225) ^ 2;
+            setpacket.site = GateWayMac;
+            setpacket.size = 49;
+            setpacket.target_mac_address = bulb.bulbMac;
+            SendPacket(bulb, setpacket);
         }
 
         public void AddBulb(LIFX_LightStatus stat)
