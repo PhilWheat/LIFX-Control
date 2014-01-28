@@ -75,17 +75,22 @@ namespace LIFXControlTest
 
         private void Cycle_Click(object sender, RoutedEventArgs e)
         {
-            colorcycle = !colorcycle;
-            if (colorcycle)
-            {
-                for (UInt16 i = 0; i < 65500; i += 100)
+            int step = Convert.ToInt32(CycleStep.Text);
+            int cycleDelay = 200 - (Network.bulbs.Count * Convert.ToInt32(PacketDelay.Text));
+            if (cycleDelay < 0)
+            { cycleDelay = 0; }
+            //colorcycle = !colorcycle;
+            //if (colorcycle)
+            //{
+                for (int i = 0; i < 65500; i += step)
                 {
-                    Network.SetAllBulbValues(Convert.ToUInt16(i), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), Convert.ToUInt16(PacketDelay.Text));
+                    // Note, overriding fade value here - just to smooth out the color transitions.
+                    Network.SetAllBulbValues(Convert.ToUInt16(i), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), 100, Convert.ToUInt16(PacketDelay.Text));
                     CycleValue.Text = i.ToString();
 
-                    Thread.Sleep(200);
+                    Thread.Sleep(cycleDelay);
                 }
-            }
+            //}
         }
 
         private void Value_KeyDown(object sender, KeyEventArgs e)

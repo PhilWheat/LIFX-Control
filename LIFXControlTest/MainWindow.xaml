@@ -15,12 +15,15 @@
         <TextBox x:Name="KelvinValue" HorizontalAlignment="Left" Height="23" Margin="132,153,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" UndoLimit="0" KeyDown="Value_KeyDown" ToolTip="Light Temp Best Range 2000-6000"/>
         <Label Content="Fade Time" HorizontalAlignment="Left" Margin="35,182,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="FadeValue" HorizontalAlignment="Left" Height="23" Margin="132,182,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" KeyDown="Value_KeyDown" ToolTip="In Seconds - range 1-200"/>
-        <Button x:Name="Change" Content="Bulb Command" HorizontalAlignment="Left" Margin="35,213,0,0" VerticalAlignment="Top" Width="99" Click="Change_Click"/>
-        <Button x:Name="Cycle" Content="Color Cycle" HorizontalAlignment="Left" Margin="159,213,0,0" VerticalAlignment="Top" Width="75" Click="Cycle_Click"/>
-        <TextBox x:Name="CycleValue" HorizontalAlignment="Left" Height="23" Margin="257,213,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="Change" Content="Bulb Command" HorizontalAlignment="Left" Margin="62,219,0,0" VerticalAlignment="Top" Width="99" Click="Change_Click"/>
+        <Button x:Name="Cycle" Content="Color Cycle" HorizontalAlignment="Left" Margin="177,219,0,0" VerticalAlignment="Top" Width="75" Click="Cycle_Click"/>
+        <TextBox x:Name="CycleValue" HorizontalAlignment="Left" Height="20" Margin="278,219,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" Width="120"/>
         <TextBox x:Name="GeneralInfo" HorizontalAlignment="Left" Margin="31,249,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <TextBox x:Name="PacketInfo" HorizontalAlignment="Left" Height="74" Margin="278,72,0,0" TextWrapping="Wrap" Text="Packets" VerticalAlignment="Top" Width="202" RenderTransformOrigin="0.463,0.521"/>
-        <TextBox x:Name="PacketDelay" HorizontalAlignment="Left" Height="23" Margin="278,151,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="120" ToolTip="Delay between bulb packets in milliseconds"/>
+        <TextBox x:Name="PacketDelay" HorizontalAlignment="Left" Height="23" Margin="360,151,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="120" ToolTip="Delay between bulb packets in milliseconds"/>
+        <Label Content="Packet Delay" HorizontalAlignment="Left" Margin="278,149,0,0" VerticalAlignment="Top"/>
+        <Label Content="Cycle Step" HorizontalAlignment="Left" Margin="278,178,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.6,0.885"/>
+        <TextBox x:Name="CycleStep" HorizontalAlignment="Left" Height="23" Margin="360,182,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120" ToolTip="Step for color Cycle "/>
 
     </Grid>
 
