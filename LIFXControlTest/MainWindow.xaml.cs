@@ -42,10 +42,12 @@ namespace LIFXControlTest
             {
 
                 Network.DiscoverNetwork();
+                Network.DiscoverNetwork();
                 PacketInfo.Text = Network.InPackets.Count + " Discovery Packets Received";
                 Network.InPackets.Clear();
                 if (Network.State == NetworkState.Initialized)
                 {
+                    Network.Inventory();
                     Network.Inventory();
                     Change.IsEnabled = true; Cycle.IsEnabled = true;
                     ConnectBtn.Content = "Connected";

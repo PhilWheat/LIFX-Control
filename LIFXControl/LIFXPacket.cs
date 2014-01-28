@@ -27,7 +27,7 @@ namespace LIFX
       UDP = 1,
       TCP = 2
     }
-    enum RESET_SWITCH_POSITION: byte
+    public enum RESET_SWITCH_POSITION : byte
     {
       UP = 0,
       DOWN = 1
@@ -298,7 +298,7 @@ namespace LIFX
     /// <summary>
     /// Network Management Packets
     /// </summary>
-    class LIFX_GetPANGateWay :LIFXPacket
+    public class LIFX_GetPANGateWay :LIFXPacket
     {
         // Packet type 0x02 - app to bulb
         // No Payload
@@ -307,7 +307,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_PANGateWay : LIFXPacket
+    public class LIFX_PANGateWay : LIFXPacket
     {
         // Packet type 0x03 - bulb to app
         public SERVICE service;
@@ -343,7 +343,7 @@ namespace LIFX
     /// <summary>
     /// Power Management Packets
     /// </summary>
-    class LIFX_GetPowerState : LIFXPacket
+    public class LIFX_GetPowerState : LIFXPacket
     {
         // Packet type 0x14 - app to bulb
         // No Payload
@@ -351,7 +351,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_SetPowerState : LIFXPacket
+    public class LIFX_SetPowerState : LIFXPacket
     {
         // Packet type 0x15 - app to bulb
         // 2 Byte Payload
@@ -371,7 +371,7 @@ namespace LIFX
             OnOff = BitConverter.ToUInt16(payloadBuffer, 0);
         }
     }
-    class LIFX_PowerState : LIFXPacket
+    public class LIFX_PowerState : LIFXPacket
     {
         // Packet type 0x16 - bulb to app
         // 2 byte payload
@@ -394,7 +394,7 @@ namespace LIFX
     /// <summary>
     /// Wireless Management
     /// </summary>
-    class LIFX_GetWifiInfo : LIFXPacket
+    public class LIFX_GetWifiInfo : LIFXPacket
     {
         // Packet type 0x10 - app to bulb
         // No Payload
@@ -402,7 +402,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_WifiInfo : LIFXPacket
+    public class LIFX_WifiInfo : LIFXPacket
     {
         // Packet type 0x11 - bulb to app
         // 14 Byte payload
@@ -435,7 +435,7 @@ namespace LIFX
             Mcu_temperature = BitConverter.ToInt16(payloadBuffer, 12);
         }
     }
-    class LIFX_GetWifiFirmwareState : LIFXPacket
+    public class LIFX_GetWifiFirmwareState : LIFXPacket
     {
         // Packet type 0x12 - app to bulb
         // No Payload
@@ -443,7 +443,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_WifiFirmwareState : LIFXPacket
+    public class LIFX_WifiFirmwareState : LIFXPacket
     {
         // Packet type 0x13 - bulb to app
         // 20 Byte Payload
@@ -471,7 +471,7 @@ namespace LIFX
             version = BitConverter.ToUInt16(payloadBuffer, 16);
         }
     }
-    class LIFX_GetWifiState : LIFXPacket
+    public class LIFX_GetWifiState : LIFXPacket
     {
         // Packet type 0x12d - app to bulb
         // 1 byte payload
@@ -491,7 +491,7 @@ namespace LIFX
             interface_type = payloadBuffer[0];
         }
     }
-        class LIFX_SetWifiState : LIFXPacket
+    public class LIFX_SetWifiState : LIFXPacket
     {
         // Packet type 0x12e - app to bulb
         // 22 byte payload
@@ -523,7 +523,7 @@ namespace LIFX
             Array.Copy(payloadBuffer, 8, ip6_address, 6, 16);
         }
     }
-    class LIFX_WifiState : LIFXPacket
+    public class LIFX_WifiState : LIFXPacket
     {
         // Packet type 0x12f - bulb to app
         // 22 byte payload
@@ -555,7 +555,7 @@ namespace LIFX
             Array.Copy(payloadBuffer, 8, ip6_address, 6, 16);
         }
     }
-    class LIFX_GetAccessPoints : LIFXPacket
+    public class LIFX_GetAccessPoints : LIFXPacket
     {
         // Packet type 0x130 - app to bulb
         // No Payload
@@ -563,7 +563,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_SetAccessPoint : LIFXPacket
+    public class LIFX_SetAccessPoint : LIFXPacket
     {
         // Packet type 0x131 - app to bulb
         // 98 byte payload 
@@ -597,7 +597,7 @@ namespace LIFX
         }
 
     }
-    class LIFX_AccessPoint : LIFXPacket
+    public class LIFX_AccessPoint : LIFXPacket
     {
         // Packet type 0x132 - bulb to app
         // 38 byte payload
@@ -637,7 +637,7 @@ namespace LIFX
     /// <summary>
     /// Labels and Tags
     /// </summary>
-    class LIFX_GetBulbLabel : LIFXPacket
+    public class LIFX_GetBulbLabel : LIFXPacket
     {
         // Packet type 0x17 - app to bulb
         // no payload
@@ -645,7 +645,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_SetBulbLabel : LIFXPacket
+    public class LIFX_SetBulbLabel : LIFXPacket
     {
         // Packet type 0x18 - app to bulb
         // 32 byte payload
@@ -665,7 +665,7 @@ namespace LIFX
             Array.Copy(payloadBuffer, 0, label, 0, 32);
         }
     }
-    class LIFX_BulbLabel : LIFXPacket
+    public class LIFX_BulbLabel : LIFXPacket
     {
         // Packet type 0x19 - bulb to app
         // 32 byte payload
@@ -685,7 +685,7 @@ namespace LIFX
             Array.Copy(payloadBuffer, 0, label, 0, 32);
         }
     }
-    class LIFX_GetTags : LIFXPacket
+    public class LIFX_GetTags : LIFXPacket
     {
         // Packet type 0x1a - app to bulb
         // no payload
@@ -693,7 +693,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_SetTags : LIFXPacket
+    public class LIFX_SetTags : LIFXPacket
     {
         // Packet type 0x1b - app to bulb
         // 8 byte payload
@@ -713,7 +713,7 @@ namespace LIFX
             tags = BitConverter.ToUInt64(payloadBuffer, 0);
         }
     }
-    class LIFX_Tags : LIFXPacket
+    public class LIFX_Tags : LIFXPacket
     {
         // Packet type 0x1c - bulb to app
         // 8 byte payload
@@ -733,7 +733,7 @@ namespace LIFX
             tags = BitConverter.ToUInt64(payloadBuffer, 0);
         }
     }
-    class LIFX_GetTagLabels : LIFXPacket
+    public class LIFX_GetTagLabels : LIFXPacket
     {
         // Packet type 0xx1d - app to bulb
         // 8 byte payload
@@ -753,7 +753,7 @@ namespace LIFX
             tags = BitConverter.ToUInt64(payloadBuffer, 0);
         }
     }
-    class LIFX_SetTagLabels : LIFXPacket
+    public class LIFX_SetTagLabels : LIFXPacket
     {
         // Packet type 0x1e - app to bulb
         // 40 byte payload
@@ -777,7 +777,7 @@ namespace LIFX
             Array.Copy(payloadBuffer, 1, label, 0, 32);
         }
     }
-    class LIFX_TagLabels : LIFXPacket
+    public class LIFX_TagLabels : LIFXPacket
     {
         // Packet type 0x1f - bulb to app
         // 40 byte payload
@@ -804,7 +804,7 @@ namespace LIFX
     /// <summary>
     /// Brightness and Colors
     /// </summary>
-    class LIFX_GetLightState : LIFXPacket
+    public class LIFX_GetLightState : LIFXPacket
     {
         // Packet type 0x65 - app to bulb
         // No payload.  Expect one or more 0x6b Light Status packets response
@@ -812,7 +812,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_SetLightColor : LIFXPacket
+    public class LIFX_SetLightColor : LIFXPacket
     {
         // Packet type 0x66 - app to bulb
         // 13 Byte Payload
@@ -852,7 +852,7 @@ namespace LIFX
             fadeTime = BitConverter.ToUInt32(payloadBuffer, 9);
         }
     }
-    class LIFX_SetWaveForm : LIFXPacket
+    public class LIFX_SetWaveForm : LIFXPacket
     {
         // Packet type 0x67 - app to bulb
         // 21 byte payload
@@ -909,7 +909,7 @@ namespace LIFX
             waveform = payloadBuffer[20];
         }
     }
-    class LIFX_SetDimAbsolute : LIFXPacket
+    public class LIFX_SetDimAbsolute : LIFXPacket
     {
         // Packet type 0x68 - app to bulb
         // 6 byte payload
@@ -1012,7 +1012,7 @@ namespace LIFX
     /// <summary>
     /// Time
     /// </summary>
-    class LIFX_GetTime : LIFXPacket
+    public class LIFX_GetTime : LIFXPacket
     {
         // Packet type 0x04 - app to bulb
         // No Payload - expect a 0x05 - Time State packet in response
@@ -1021,7 +1021,7 @@ namespace LIFX
         }
 
     }
-    class LIFX_SetTime : LIFXPacket
+    public class LIFX_SetTime : LIFXPacket
     {
         // Packet type 0x05 - app to bulb
         public UInt64 time;
@@ -1040,7 +1040,7 @@ namespace LIFX
             time = BitConverter.ToUInt64(payloadBuffer, 0);
         }
     }
-    class LIFX_TimeState : LIFXPacket
+    public class LIFX_TimeState : LIFXPacket
     {
         // Packet type 0x06 - app to bulb
         public UInt64 time;
@@ -1062,7 +1062,7 @@ namespace LIFX
     /// <summary>
     /// Diagnostic
     /// </summary>
-    class LIFX_GetResetSwitch : LIFXPacket
+    public class LIFX_GetResetSwitch : LIFXPacket
     {
         // Packet type 0x07 - app to bulb
         // No Payload.  Expect a 0x08 Reset Switch State packet in response.
@@ -1070,7 +1070,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_ResetSwtichState : LIFXPacket
+    public class LIFX_ResetSwtichState : LIFXPacket
     {
         // Packet type 0x08 - bulb to app
         public RESET_SWITCH_POSITION resetSwitchPosition;
@@ -1104,7 +1104,7 @@ namespace LIFX
             }
         }
     }
-    class LIFX_GetDummyLoad : LIFXPacket
+    public class LIFX_GetDummyLoad : LIFXPacket
     {
         // Packet type 0x09 - app to bulb
         public LIFX_GetDummyLoad()
@@ -1112,7 +1112,7 @@ namespace LIFX
             throw new NotImplementedException();
         }
     }
-    class LIFX_SetDummyLoad : LIFXPacket
+    public class LIFX_SetDummyLoad : LIFXPacket
     {
         // Packet type 0x0a - app to bulb
         public LIFX_SetDummyLoad()
@@ -1120,7 +1120,7 @@ namespace LIFX
             throw new NotImplementedException();
         }
     }
-    class LIFX_DummyLoad : LIFXPacket
+    public class LIFX_DummyLoad : LIFXPacket
     {
         // Packet type 0x0b - bulb to app
         public LIFX_DummyLoad()
@@ -1128,7 +1128,7 @@ namespace LIFX
             throw new NotImplementedException();
         }
     }
-    class LIFX_GetMeshInfo : LIFXPacket
+    public class LIFX_GetMeshInfo : LIFXPacket
     {
         // Packet type 0x0c - app to bulb
         // No Payload - Expect 0x0d Mesh Info packet in response
@@ -1136,7 +1136,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_MeshInfo : LIFXPacket
+    public class LIFX_MeshInfo : LIFXPacket
     {
         // Packet type 0x0d - bulb to app
         // 14 byte payload
@@ -1164,7 +1164,7 @@ namespace LIFX
             mcu_temperature = BitConverter.ToInt16(payloadBuffer, 12);
         }
     }
-    class LIFX_GetMeshFirmware : LIFXPacket
+    public class LIFX_GetMeshFirmware : LIFXPacket
     {
         // Packet type 0x0e - app to bulb
         // No Payload - Expect a 0x0f Mesh Firmware State packet in response
@@ -1172,7 +1172,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_MeshFirmwareState : LIFXPacket
+    public class LIFX_MeshFirmwareState : LIFXPacket
     {
         // Packet type 0x0f - bulb to app
         // 20 byte payload
@@ -1228,7 +1228,7 @@ namespace LIFX
             Array.Copy(BitConverter.GetBytes(fwVersion), 0, payloadBuffer, 16, 4);
         }
     }
-    class LIFX_GetVersion : LIFXPacket
+    public class LIFX_GetVersion : LIFXPacket
     {
         // Packet type 0x20 - app to bulb
         // No Payload.  Expect 0x21 Version State packet in response.
@@ -1236,7 +1236,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_VersionState : LIFXPacket
+    public class LIFX_VersionState : LIFXPacket
     {
         // Packet type 0x21 - app to bulb
         // 12 byte payload
@@ -1264,7 +1264,7 @@ namespace LIFX
             bulb_version = BitConverter.ToUInt32(payloadBuffer, 8);
         }
     }
-    class LIFX_GetInfo : LIFXPacket
+    public class LIFX_GetInfo : LIFXPacket
     {
         // Packet type 0x22 - app to bulb
         // No Payload.  Expect packet 0x23 Info packet in response
@@ -1272,7 +1272,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_Info : LIFXPacket
+    public class LIFX_Info : LIFXPacket
     {
         // Packet type 0x23 - bulb to app
         // 24 Byte payload
@@ -1300,7 +1300,7 @@ namespace LIFX
             downtime = BitConverter.ToUInt64(payloadBuffer, 16);
         }
     }
-    class LIFX_GetMCURailVoltage : LIFXPacket
+    public class LIFX_GetMCURailVoltage : LIFXPacket
     {
         // Packet type 0x24 - app to bulb
         // No Payload.  Expect Packet 0x25 MCU Rail Voltage in response.
@@ -1308,7 +1308,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_MCURailVoltage : LIFXPacket
+    public class LIFX_MCURailVoltage : LIFXPacket
     {
         // Packet type 0x25 - bulb to app
         // 4 byte payload
@@ -1328,7 +1328,7 @@ namespace LIFX
             voltage = BitConverter.ToUInt32(payloadBuffer, 0);
         }
     }
-    class LIFX_Reboot : LIFXPacket
+    public class LIFX_Reboot : LIFXPacket
     {
         // Packet type 0x26 - app to bulb
         // No payload.  No packet response expected
@@ -1336,7 +1336,7 @@ namespace LIFX
         {
         }
     }
-    class LIFX_SetFactoryTestMode : LIFXPacket
+    public class LIFX_SetFactoryTestMode : LIFXPacket
     {
         // Packet type 0x27 - app to bulb
         // 1 byte payload, unknown contents.
@@ -1356,7 +1356,7 @@ namespace LIFX
             unknown = payloadBuffer[0];
         }
     }
-    class LIFX_DisableFactoryTestMode : LIFXPacket
+    public class LIFX_DisableFactoryTestMode : LIFXPacket
     {
         // Packet type 0x28 - app to bulb
         // No payload.  No packet response expected
