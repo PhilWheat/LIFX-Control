@@ -205,7 +205,7 @@ namespace LIFX
             socket.Close();
         }
 
-        public void SetAllBulbValues(UInt16 hue, UInt16 saturation, UInt16 brightness, UInt16 kelvin, UInt32 fade)
+        public void SetAllBulbValues(UInt16 hue, UInt16 saturation, UInt16 brightness, UInt16 kelvin, UInt32 fade, UInt16 delay)
         {
             LIFX_SetLightColor setpacket = (LIFX_SetLightColor)PacketFactory.Getpacket(0x66);
             setpacket.hue = hue;
@@ -219,7 +219,7 @@ namespace LIFX
             {
                 setpacket.target_mac_address = bulb.bulbMac;
                 SendPacket(bulb, setpacket);
-                Thread.Sleep(50);
+                Thread.Sleep(100);
             }
         }
 

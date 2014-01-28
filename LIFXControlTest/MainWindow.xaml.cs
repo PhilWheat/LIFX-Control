@@ -40,14 +40,13 @@ namespace LIFXControlTest
         {
             if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
             {
-
-                Network.DiscoverNetwork();
                 Network.DiscoverNetwork();
                 PacketInfo.Text = Network.InPackets.Count + " Discovery Packets Received";
                 Network.InPackets.Clear();
                 if (Network.State == NetworkState.Initialized)
                 {
                     Network.Inventory();
+                    Thread.Sleep(100);
                     Network.Inventory();
                     Change.IsEnabled = true; Cycle.IsEnabled = true;
                     ConnectBtn.Content = "Connected";
@@ -71,7 +70,7 @@ namespace LIFXControlTest
 
         private void Change_Click(object sender, RoutedEventArgs e)
         {
-            Network.SetAllBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text));
+            Network.SetAllBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), Convert.ToUInt16(PacketDelay.Text));
         }
 
         private void Cycle_Click(object sender, RoutedEventArgs e)
@@ -81,7 +80,7 @@ namespace LIFXControlTest
             {
                 for (UInt16 i = 0; i < 65500; i += 100)
                 {
-                    Network.SetAllBulbValues(Convert.ToUInt16(i), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text));
+                    Network.SetAllBulbValues(Convert.ToUInt16(i), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), Convert.ToUInt16(PacketDelay.Text));
                     CycleValue.Text = i.ToString();
 
                     Thread.Sleep(200);
@@ -93,7 +92,7 @@ namespace LIFXControlTest
         {
             if (e.Key == Key.Enter)
             {
-                Network.SetAllBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text));
+                Network.SetAllBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), Convert.ToUInt16(PacketDelay.Text));
             }
         }
 
