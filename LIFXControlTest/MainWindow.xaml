@@ -1,10 +1,10 @@
 ﻿<Window x:Class="LIFXControlTest.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="577.558" Width="525">
-    <Grid Margin="0,0,0,-3">
-        <Button x:Name="ConnectBtn" Content="Connect" HorizontalAlignment="Left" Margin="31,22,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <TextBlock x:Name="Status" HorizontalAlignment="Left" Margin="132,22,0,0" TextWrapping="Wrap" Text="Number of Bulbs: " VerticalAlignment="Top" Width="348"/>
+        Title="MainWindow" Height="465.558" Width="525">
+    <Grid Margin="0,-58,0,48">
+        <Button x:Name="ConnectBtn" Content="Connect" HorizontalAlignment="Left" Margin="31,22,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" Visibility="Hidden"/>
+        <TextBlock x:Name="Status" HorizontalAlignment="Left" Margin="352,218,0,0" TextWrapping="Wrap" Text="Number of Bulbs: " VerticalAlignment="Top" Width="128"/>
         <Label Content="Hue" HorizontalAlignment="Left" Margin="31,68,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="HueValue" HorizontalAlignment="Left" Height="23" Margin="132,72,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" KeyDown="Value_KeyDown" ToolTip="Color.  Reds at ends (0 and Max value) Range 0-65535"/>
         <Label Content="Saturation" HorizontalAlignment="Left" Margin="31,94,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.125,0.538"/>
@@ -15,9 +15,9 @@
         <TextBox x:Name="KelvinValue" HorizontalAlignment="Left" Height="23" Margin="132,153,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" UndoLimit="0" KeyDown="Value_KeyDown" ToolTip="Light Temp Best Range 2000-6000"/>
         <Label Content="Fade Time" HorizontalAlignment="Left" Margin="35,182,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="FadeValue" HorizontalAlignment="Left" Height="23" Margin="132,182,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" KeyDown="Value_KeyDown" ToolTip="In Seconds - range 1-200"/>
-        <Button x:Name="Change" Content="Bulb Command" HorizontalAlignment="Left" Margin="62,219,0,0" VerticalAlignment="Top" Width="99" Click="Change_Click"/>
-        <Button x:Name="Cycle" Content="Color Cycle" HorizontalAlignment="Left" Margin="177,219,0,0" VerticalAlignment="Top" Width="75" Click="Cycle_Click"/>
-        <TextBox x:Name="CycleValue" HorizontalAlignment="Left" Height="20" Margin="278,219,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="Change" Content="Bulb Command" HorizontalAlignment="Left" Margin="31,218,0,0" VerticalAlignment="Top" Width="99" Click="Change_Click"/>
+        <Button x:Name="Cycle" Content="Color Cycle" HorizontalAlignment="Left" Margin="145,218,0,0" VerticalAlignment="Top" Width="75" Click="Cycle_Click"/>
+        <TextBox x:Name="CycleValue" HorizontalAlignment="Left" Height="20" Margin="236,219,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" Width="96"/>
         <TextBox x:Name="PacketInfo" HorizontalAlignment="Left" Height="74" Margin="278,72,0,0" TextWrapping="Wrap" Text="Packets" VerticalAlignment="Top" Width="202" RenderTransformOrigin="0.463,0.521"/>
         <TextBox x:Name="PacketDelay" HorizontalAlignment="Left" Height="23" Margin="360,151,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="120" ToolTip="Delay between bulb packets in milliseconds"/>
         <Label Content="Packet Delay" HorizontalAlignment="Left" Margin="278,149,0,0" VerticalAlignment="Top"/>
