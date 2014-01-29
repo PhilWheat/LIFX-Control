@@ -46,14 +46,14 @@ namespace LIFX
         public byte[] month;
         public byte year;
     }
-    public class LIFXPacketFactory
+    public static class LIFXPacketFactory
     {
-        public LIFXPacket Getpacket()
+        public static LIFXPacket Getpacket()
         {
             LIFXPacket packet = new LIFXPacket();
             return packet;
         }
-        public LIFXPacket Getpacket (UInt16 packetType)
+        public static LIFXPacket Getpacket (UInt16 packetType)
         {
             LIFXPacket packet = null; ;
             switch (packetType)
@@ -213,7 +213,6 @@ namespace LIFX
                 break;
                 default:
                     return null;
-                break;
             }
             packet.packet_type = packetType;
             if (packet.protocol == 0)
@@ -223,7 +222,27 @@ namespace LIFX
             return packet;
         }
 
-        public LIFXPacket Getpacket(byte[] packetBuffer)
+        public static LIFXPacket Getpacket(UInt16 packetType, LIFXBulb bulb)
+        {
+            LIFXPacket packet = null; ;
+            switch (packetType)
+            {
+                case 0x66:
+                    packet = new LIFX_SetLightColor(bulb);
+                    break;
+                default:
+                    return null;
+            }
+            packet.packet_type = packetType;
+            if (packet.protocol == 0)
+            { packet.protocol = 13312; }
+            if (packet.size == 0)
+            { packet.size = 36; }
+            return packet;
+
+        }
+
+        public static LIFXPacket Getpacket(byte[] packetBuffer)
         {
             UInt16 packetType = BitConverter.ToUInt16(packetBuffer, 32);
             LIFXPacket newPacket = Getpacket(packetType);
@@ -246,7 +265,7 @@ namespace LIFX
         }
 
 
-        public byte[] PacketToBuffer(LIFXPacket encodePacket)
+        public static byte[] PacketToBuffer(LIFXPacket encodePacket)
         {
             byte[] buffer = new byte[encodePacket.size];
             Array.Copy(BitConverter.GetBytes(encodePacket.size), 0, buffer, 0, 2);
@@ -830,6 +849,18 @@ namespace LIFX
             brightness = 0;
             kelvin = 0;
             fadeTime = 0;
+            size = 49;
+        }
+        public LIFX_SetLightColor(LIFXBulb bulb)
+        {
+            size = 49;
+            hue = bulb.Hue;
+            saturation = bulb.Saturation;
+            brightness = bulb.Brightness;
+            kelvin = bulb.Kelvin;
+            fadeTime = bulb.Time_Delay;
+            site = bulb.BulbGateWay;
+            target_mac_address = bulb.BulbMac;
         }
         public override byte[] GetPayloadBuffer()
         {

@@ -24,21 +24,18 @@ namespace LIFXControlTest
     public partial class MainWindow : Window
     {
         LIFXNetwork Network = new LIFXNetwork();
-        bool colorcycle = false;
         DispatcherTimer dispatchTimer;
-        DateTime pingTimer;
         public MainWindow()
         {
             InitializeComponent();
-
+            //BulbSetup();
+            Network.Start();
+            Thread.Sleep(1000);  // Wait 1 second to get at least first bulb
             dispatchTimer = new System.Windows.Threading.DispatcherTimer();
             dispatchTimer.Tick += new EventHandler(Timed_Refresh);
             // Update once a second
             dispatchTimer.Interval = new TimeSpan(0, 0, 0, 1);
             dispatchTimer.Start();
-
-            BulbSetup();
-            pingTimer = DateTime.Now.AddMinutes(1);
 
             if (Network.State != NetworkState.Initialized)
             {
@@ -46,8 +43,6 @@ namespace LIFXControlTest
                 Cycle.IsEnabled = false;
             }
         }
-
-
         public void Timed_Refresh(object sender, EventArgs e)
         {
             if (Network != null)
@@ -59,88 +54,21 @@ namespace LIFXControlTest
                     {
                         if (!bulbListBox.Items.Contains(bulb))
                         {
+                            // Default to selected
+                            bulb.UXSelected = true;
                             bulbListBox.Items.Add(bulb);
                             bulbListBox.SelectedItems.Add(bulb);
                         }
                     }
                 }
             }
-            if (colorcycle)
+            if (Network.ColorCycleBulbs)
             {
-                // Note, overriding fade value here - just to smooth out the color transitions.
-                // Updates set for every second, so should be 1000ms for color transition.
                 CycleValue.Text = "";
                 foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
                 {
-                    bulb.hue += Convert.ToUInt16(CycleStep.Text); ;
-                    Network.SetBulbValues(bulb.hue, Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), 1000, bulb);
-                    CycleValue.Text += bulb.hue.ToString() + "     ";
+                    CycleValue.Text += bulb.Hue + "    ";
                 }
-            }
-            if (DateTime.Now > pingTimer)
-            {
-                Network.Inventory();
-                pingTimer = DateTime.Now.AddMinutes(1);
-            }
-        }
-
-        private void BulbSetup()
-        {
-            if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
-            {
-                Network.DiscoverNetwork();
-                PacketInfo.Text = Network.InPackets.Count + " Discovery Packets Received";
-                Network.InPackets.Clear();
-                if (Network.State == NetworkState.Initialized)
-                {
-                    Network.Inventory();
-                    Thread.Sleep(1000);
-                    Network.Inventory();
-                    Change.IsEnabled = true; Cycle.IsEnabled = true;
-                    ConnectBtn.Content = "Connected";
-                }
-                PacketInfo.Text = PacketInfo.Text + System.Environment.NewLine + Network.InPackets.Count + " Inventory Packets Received";
-                Status.Text = "Number of Bulbs: " + Network.bulbs.Count();
-                bulbListBox.Items.Clear();
-                foreach (LIFXBulb bulb in Network.bulbs)
-                {
-                    bulbListBox.Items.Add(bulb);
-                }
-                bulbListBox.SelectAll();
-            }
-            else
-            {
-                Status.Text = "Not connected to a network";
-            }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
-            {
-                Network.DiscoverNetwork();
-                PacketInfo.Text = Network.InPackets.Count + " Discovery Packets Received";
-                Network.InPackets.Clear();
-                if (Network.State == NetworkState.Initialized)
-                {
-                    Network.Inventory();
-                    Thread.Sleep(1000);
-                    Network.Inventory();
-                    Change.IsEnabled = true; Cycle.IsEnabled = true;
-                    ConnectBtn.Content = "Connected";
-                }
-                PacketInfo.Text = PacketInfo.Text + System.Environment.NewLine + Network.InPackets.Count + " Inventory Packets Received";
-                Status.Text = "Number of Bulbs: " + Network.bulbs.Count();
-                bulbListBox.Items.Clear();
-                foreach (LIFXBulb bulb in Network.bulbs)
-                {
-                    bulbListBox.Items.Add(bulb);
-                }
-                bulbListBox.SelectAll();
-            }
-            else
-            {
-                Status.Text = "Not connected to a network";
             }
         }
 
@@ -149,15 +77,18 @@ namespace LIFXControlTest
             foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
             {
                 Network.SetBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), bulb);
-                Thread.Sleep(Convert.ToUInt16(PacketDelay.Text));
+                //Thread.Sleep(Convert.ToUInt16(PacketDelay.Text));
             }
         }
 
         private void Cycle_Click(object sender, RoutedEventArgs e)
         {
-            colorcycle = !colorcycle;
-            if (colorcycle)
-            { Cycle.Content = "Stop Cycle"; }
+            Network.ColorCycleBulbs = !Network.ColorCycleBulbs;
+            if (Network.ColorCycleBulbs)
+            { 
+                Cycle.Content = "Stop Cycle";
+                Network.ColorCycleStep = Convert.ToUInt16(CycleStep.Text);
+            }
             else
             { Cycle.Content = "Color Cycle"; }
         }
@@ -171,6 +102,18 @@ namespace LIFXControlTest
                     Network.SetBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), bulb);
                     Thread.Sleep(Convert.ToUInt16(PacketDelay.Text));
                 }
+            }
+        }
+
+        private void bulbListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            foreach (LIFXBulb bulb in e.AddedItems)
+            {
+                bulb.UXSelected = true;
+            }
+            foreach (LIFXBulb bulb in e.RemovedItems)
+            {
+                bulb.UXSelected = false;
             }
         }
 

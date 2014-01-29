@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="465.558" Width="525">
     <Grid Margin="0,-58,0,48">
-        <Button x:Name="ConnectBtn" Content="Connect" HorizontalAlignment="Left" Margin="31,22,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" Visibility="Hidden"/>
         <TextBlock x:Name="Status" HorizontalAlignment="Left" Margin="352,218,0,0" TextWrapping="Wrap" Text="Number of Bulbs: " VerticalAlignment="Top" Width="128"/>
         <Label Content="Hue" HorizontalAlignment="Left" Margin="31,68,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="HueValue" HorizontalAlignment="Left" Height="23" Margin="132,72,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" KeyDown="Value_KeyDown" ToolTip="Color.  Reds at ends (0 and Max value) Range 0-65535"/>
@@ -23,7 +22,7 @@
         <Label Content="Packet Delay" HorizontalAlignment="Left" Margin="278,149,0,0" VerticalAlignment="Top"/>
         <Label Content="Cycle Step" HorizontalAlignment="Left" Margin="278,178,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.6,0.885"/>
         <TextBox x:Name="CycleStep" HorizontalAlignment="Left" Height="23" Margin="360,182,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120" ToolTip="Step for color Cycle "/>
-        <ListBox x:Name="bulbListBox" HorizontalAlignment="Left" Height="117" Margin="31,255,0,0" VerticalAlignment="Top" Width="435" SelectionMode="Multiple"/>
+        <ListBox x:Name="bulbListBox" HorizontalAlignment="Left" Height="117" Margin="31,255,0,0" VerticalAlignment="Top" Width="435" SelectionMode="Multiple" SelectionChanged="bulbListBox_SelectionChanged"/>
 
     </Grid>
 
