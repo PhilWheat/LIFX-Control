@@ -109,9 +109,6 @@ namespace LIFX
         /// </summary>
         public LIFXNetwork()
         {
-            //_portHeartbeat = new Timer(NetworkHeartbeat);
-            //_portHeartbeat.Change(0, 500);
-
         }
 
         public void Start()
@@ -138,7 +135,6 @@ namespace LIFX
                         bulb.Time_Delay = 1200;
                         LIFX_SetLightColor setPacket = (LIFX_SetLightColor)LIFXPacketFactory.Getpacket(0x66, bulb);
                         bulb.SendPacket(setPacket);
-                        //Network.SetBulbValues(bulb.Hue, Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), 1000, bulb);
                     }
                 }
             }
