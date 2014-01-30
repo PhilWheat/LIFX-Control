@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="LIFXNetwork.cs" />
     <Compile Include="LIFXPacket.cs" />
+    <Compile Include="XmlWriterNoDeclaration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

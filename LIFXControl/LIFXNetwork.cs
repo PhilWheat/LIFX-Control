@@ -181,11 +181,8 @@ namespace LIFX
         // Should not change for the life of the bulb object
         public byte[] BulbMac;
         public byte[] BulbGateWay;
-<<<<<<< HEAD
-        public IPEndPoint BulbEndpoint;
-        public Socket BulbSocket;
+        
 
-=======
         public byte[] bulbEndpoint
         {
             get
@@ -208,7 +205,7 @@ namespace LIFX
             BulbSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
->>>>>>> Command Line App + Serialization
+
         // Should only be changed by the object
         public DateTime LastNetworkUpdate;
         public bool HasUpdates;
@@ -250,11 +247,7 @@ namespace LIFX
             {
                 BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
             }
-<<<<<<< HEAD
-            catch (Exception e)
-=======
             catch (Exception)
->>>>>>> Command Line App + Serialization
             { 
             }
         }
@@ -264,11 +257,7 @@ namespace LIFX
             {
             BulbSocket.Send(buffer);
             }
-<<<<<<< HEAD
-            catch (Exception e)
-=======
             catch (Exception)
->>>>>>> Command Line App + Serialization
             { 
             }
         }
@@ -282,12 +271,9 @@ namespace LIFX
 
         public Queue<LIFXPacket> OutPackets = new Queue<LIFXPacket>();
         public Queue<LIFXPacket> InPackets = new Queue<LIFXPacket>();
-
-<<<<<<< HEAD
-        public List<LIFXBulb> bulbs = new List<LIFXBulb>();
-=======
+        
         public Bulbs bulbs = new Bulbs();
->>>>>>> Command Line App + Serialization
+
         char[] charsToTrim = { '\0'};
         private bool reEntrant = false;
         private Timer _readTimer;
@@ -305,17 +291,7 @@ namespace LIFX
         public LIFXNetwork()
         {
         }
-<<<<<<< HEAD
 
-        public void Start()
-        {
-            DiscoverNetwork();
-            Inventory();
-            _PollTimer = new Timer(NetworkPoll);
-            _PollTimer.Change(0, 1000);
-            pingTimer = DateTime.Now.AddMinutes(1);
-
-=======
         public void Setup()
         {
             _PollTimer = new Timer(NetworkPoll);
@@ -327,7 +303,6 @@ namespace LIFX
             DiscoverNetwork();
             Inventory();
             Setup();
->>>>>>> Command Line App + Serialization
         }
 
         private void NetworkPoll(object state)
@@ -454,11 +429,6 @@ namespace LIFX
                 tcpGateways.Add(gw1);
 
                 bulbEnum.BulbSocket = socket;
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> Command Line App + Serialization
             }
             _readTimer = new Timer(PacketPump);
             _readTimer.Change(0, 500);
@@ -641,16 +611,13 @@ namespace LIFX
                             {
                                 if (packet is LIFX_LightStatus)
                                 {
-<<<<<<< HEAD
-                                    int bulbMatch = bulbs.FindIndex(p => p.BulbMac.SequenceEqual(packet.target_mac_address));
-                                    UpdateBulb((LIFX_LightStatus)packet, bulbs[bulbMatch]);
-=======
+                                    //int bulbMatch = bulbs.FindIndex(p => p.BulbMac.SequenceEqual(packet.target_mac_address));
+                                    //UpdateBulb((LIFX_LightStatus)packet, bulbs[bulbMatch]);
                                     foreach (LIFXBulb b in bulbs)
                                     {
                                         if (b.BulbMac.SequenceEqual(packet.target_mac_address))
                                             UpdateBulb((LIFX_LightStatus)packet, b);
                                     }
->>>>>>> Command Line App + Serialization
                                 }
                             }
                             InPackets.Enqueue(LIFXPacketFactory.Getpacket(readBuffer));
