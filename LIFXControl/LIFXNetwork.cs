@@ -6,26 +6,209 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Xml;
+using System.Xml.Serialization;
+using System.Diagnostics;
+using System.IO;
+using System.ComponentModel;
 
 namespace LIFX
 {
     public enum NetworkState { UnInitialized, Discovery, Initialized };
 
+    [Serializable]
+    [XmlRoot("BulbGateway")]
     public class BulbGateway
     {
+        public byte[] _endPoint
+        {
+            get
+            {
+                if (endPoint != null)
+                    return endPoint.Address.GetAddressBytes();
+                else
+                    return null;
+            }
+            set { endPoint = new IPEndPoint(new IPAddress(value), 56700); }
+        }
+
+        [XmlIgnore]
         public IPEndPoint endPoint;
+        [XmlIgnore]
         public Socket gateWaySocket;
         public byte[] gatewayMac;
+
+        public BulbGateway()
+        {
+            gateWaySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        }
     }
 
+    [Serializable]
+    [XmlRoot("BulbGateways")]
+    public class BulbGateways : BindingList<BulbGateway>
+    {
+        string filename;
+        public string Filename
+        {
+            get { return filename; }
+            set { filename = value; }
+        }
+
+
+        public void Save()
+        {
+            this.SaveAs(filename);
+        }
+        public void SaveAs(string filename)
+        {
+            if (this.Count > 0)
+            {
+                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+                XmlSerializer x = new XmlSerializer(typeof(BulbGateways));
+                ns.Add("", "");
+
+                StringWriter sw = new StringWriter();
+                XmlWriter writer = new XmlWriterNoDeclaration(sw);
+                x.Serialize(writer, this, ns);
+
+                StreamWriter fs = File.CreateText(filename);
+                fs.Write(sw.ToString());
+                fs.Close();
+            }
+        }
+        public static BulbGateways Load(string filename)
+        {
+            Debug.WriteLine(DateTime.Now.ToString() + ": Entering BulbGateways.Load(string filename)");
+            BulbGateways t;
+            if (File.Exists(filename))
+            {
+                try
+                {
+                    XmlSerializer x = new XmlSerializer(typeof(BulbGateways));
+                    using (StreamReader sr = new StreamReader(filename))
+                    t = (BulbGateways)x.Deserialize(sr);
+                    t.Filename = filename;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(DateTime.Now.ToString() + ": Error deserializing '" + filename + "', bailing!");
+                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.Message);
+                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.StackTrace);
+                    t = new BulbGateways();
+                    t.Filename = filename;
+                }
+            }
+            else
+            {
+                t = new BulbGateways();
+                t.Filename = filename;
+            }
+            Debug.WriteLine(DateTime.Now.ToString() + ": Finished SerializableBindingList.Load(string filename)");
+            return t;
+        }
+    }
+
+    [Serializable]
+    [XmlRoot("Bulbs")]
+    public class Bulbs : BindingList<LIFXBulb>
+    {
+        string filename;
+        public string Filename
+        {
+            get { return filename; }
+            set { filename = value; }
+        }
+
+
+        public void Save()
+        {
+            this.SaveAs(filename);
+        }
+        public void SaveAs(string filename)
+        {
+            if (this.Count > 0)
+            {
+                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+                XmlSerializer x = new XmlSerializer(typeof(Bulbs));
+                ns.Add("", "");
+
+                StringWriter sw = new StringWriter();
+                XmlWriter writer = new XmlWriterNoDeclaration(sw);
+                x.Serialize(writer, this, ns);
+
+                StreamWriter fs = File.CreateText(filename);
+                fs.Write(sw.ToString());
+                fs.Close();
+            }
+        }
+        public static Bulbs Load(string filename)
+        {
+            Debug.WriteLine(DateTime.Now.ToString() + ": Entering Bulbs.Load(string filename)");
+            Bulbs t;
+            if (File.Exists(filename))
+            {
+                try
+                {
+                    XmlSerializer x = new XmlSerializer(typeof(Bulbs));
+                    using (StreamReader sr = new StreamReader(filename))
+                    t = (Bulbs)x.Deserialize(sr);
+                    t.Filename = filename;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(DateTime.Now.ToString() + ": Error deserializing '" + filename + "', bailing!");
+                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.Message);
+                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.StackTrace);
+                    t = new Bulbs();
+                    t.Filename = filename;
+                }
+            }
+            else
+            {
+                t = new Bulbs();
+                t.Filename = filename;
+            }
+            Debug.WriteLine(DateTime.Now.ToString() + ": Finished SerializableBindingList.Load(string filename)");
+            return t;
+        }
+    }
+
+    [Serializable]
+    [XmlRoot("Bulb")]
     public class LIFXBulb
     {
         // Should not change for the life of the bulb object
         public byte[] BulbMac;
         public byte[] BulbGateWay;
+<<<<<<< HEAD
         public IPEndPoint BulbEndpoint;
         public Socket BulbSocket;
 
+=======
+        public byte[] bulbEndpoint
+        {
+            get
+            {
+                if (BulbEndpoint != null)
+                    return BulbEndpoint.Address.GetAddressBytes();
+                else
+                    return null;
+            }
+            set { BulbEndpoint = new IPEndPoint(new IPAddress(value), 56700); }
+        }
+        [XmlIgnore]
+        public IPEndPoint BulbEndpoint;
+        
+        [XmlIgnore]
+        public Socket BulbSocket;
+
+        public LIFXBulb()
+        {
+            BulbSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        }
+
+>>>>>>> Command Line App + Serialization
         // Should only be changed by the object
         public DateTime LastNetworkUpdate;
         public bool HasUpdates;
@@ -67,7 +250,11 @@ namespace LIFX
             {
                 BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
             }
+<<<<<<< HEAD
             catch (Exception e)
+=======
+            catch (Exception)
+>>>>>>> Command Line App + Serialization
             { 
             }
         }
@@ -77,7 +264,11 @@ namespace LIFX
             {
             BulbSocket.Send(buffer);
             }
+<<<<<<< HEAD
             catch (Exception e)
+=======
+            catch (Exception)
+>>>>>>> Command Line App + Serialization
             { 
             }
         }
@@ -87,12 +278,16 @@ namespace LIFX
     public class LIFXNetwork
     {
         public NetworkState State = NetworkState.UnInitialized;
-        private List<BulbGateway> tcpGateways;
+        public BulbGateways tcpGateways;
 
         public Queue<LIFXPacket> OutPackets = new Queue<LIFXPacket>();
         public Queue<LIFXPacket> InPackets = new Queue<LIFXPacket>();
 
+<<<<<<< HEAD
         public List<LIFXBulb> bulbs = new List<LIFXBulb>();
+=======
+        public Bulbs bulbs = new Bulbs();
+>>>>>>> Command Line App + Serialization
         char[] charsToTrim = { '\0'};
         private bool reEntrant = false;
         private Timer _readTimer;
@@ -110,6 +305,7 @@ namespace LIFX
         public LIFXNetwork()
         {
         }
+<<<<<<< HEAD
 
         public void Start()
         {
@@ -119,6 +315,19 @@ namespace LIFX
             _PollTimer.Change(0, 1000);
             pingTimer = DateTime.Now.AddMinutes(1);
 
+=======
+        public void Setup()
+        {
+            _PollTimer = new Timer(NetworkPoll);
+            _PollTimer.Change(0, 1000);
+            pingTimer = DateTime.Now.AddMinutes(1);
+        }
+        public void Start()
+        {
+            DiscoverNetwork();
+            Inventory();
+            Setup();
+>>>>>>> Command Line App + Serialization
         }
 
         private void NetworkPoll(object state)
@@ -230,7 +439,7 @@ namespace LIFX
             receivingUdpClient.Close();
 
             //Now extract and populate the Gateways
-            tcpGateways = new List<BulbGateway>();
+            tcpGateways = new BulbGateways();
 
             foreach (LIFXBulb bulbEnum in bulbs)
             {
@@ -245,7 +454,11 @@ namespace LIFX
                 tcpGateways.Add(gw1);
 
                 bulbEnum.BulbSocket = socket;
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> Command Line App + Serialization
             }
             _readTimer = new Timer(PacketPump);
             _readTimer.Change(0, 500);
@@ -269,7 +482,7 @@ namespace LIFX
                 }
                 else
                 {
-                    string breakpt = "break here, something happened";
+                    Debug.Print("break here, something happened");
                 }
             }
         }
@@ -428,13 +641,21 @@ namespace LIFX
                             {
                                 if (packet is LIFX_LightStatus)
                                 {
+<<<<<<< HEAD
                                     int bulbMatch = bulbs.FindIndex(p => p.BulbMac.SequenceEqual(packet.target_mac_address));
                                     UpdateBulb((LIFX_LightStatus)packet, bulbs[bulbMatch]);
+=======
+                                    foreach (LIFXBulb b in bulbs)
+                                    {
+                                        if (b.BulbMac.SequenceEqual(packet.target_mac_address))
+                                            UpdateBulb((LIFX_LightStatus)packet, b);
+                                    }
+>>>>>>> Command Line App + Serialization
                                 }
                             }
                             InPackets.Enqueue(LIFXPacketFactory.Getpacket(readBuffer));
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         { }
                         if (packet.size < readBuffer.Length)
                         {
