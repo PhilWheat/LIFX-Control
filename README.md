@@ -7,6 +7,14 @@ Not associated with LIFX, using packet information documented by https://github.
 
 (Huge thanks to MagicMonkey and the others for digging out the protocol, without them none of this would be possible.)
 
+Currently there are three sample projects included - 
+LifxController by codemonkey76 for command line control
+LIFXControlTest - a WPF based test driver program for the LIFXControl object
+LightSpeak - a test program that provides voice control for the bulbs using a simple grammar and the Microsoft.Speec v11 SDK
+
+You will need the Microsoft Speech Platform runtime, version 11 to compile the LightSpeak sample which can be found at:
+http://www.microsoft.com/en-us/download/details.aspx?id=27225
+
 This library is a work in progress - intended features are:
 
 Simple control of bulbs in groups or individually.

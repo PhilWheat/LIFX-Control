@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Kinect;
 using Microsoft.Speech.AudioFormat;
 using Microsoft.Speech.Recognition;
 using LIFX;
@@ -14,7 +13,6 @@ namespace Lightspeak
 {
     class Program
     {
-        private KinectSensor sensor;
         private SpeechRecognitionEngine speechEngine;
         LIFXNetwork Network = new LIFXNetwork();
         UInt16 lightLevel = 0;
@@ -24,27 +22,12 @@ namespace Lightspeak
 
         static void Main(string[] args)
         {
-            new Program().SetUpKinect();
+            new Program().SetUpSpeech();
             Console.WriteLine("Ready");
             while (true)
             {
                 Thread.Sleep(1000);
             }
-        }
-
-        private RecognizerInfo GetKinectRecognizer()
-        {
-            foreach (RecognizerInfo recognizer in SpeechRecognitionEngine.InstalledRecognizers())
-            {
-                string value;
-                recognizer.AdditionalInfo.TryGetValue("Kinect", out value);
-                if ("True".Equals(value, StringComparison.OrdinalIgnoreCase) && "en-US".Equals(recognizer.Culture.Name, StringComparison.OrdinalIgnoreCase))
-                {
-                    return recognizer;
-                }
-            }
-
-            return null;
         }
         /// <summary>
         /// Handler for recognized speech events.
@@ -109,44 +92,12 @@ namespace Lightspeak
                 }
             }
         }
-        private void SetUpKinect()
+        private void SetUpSpeech()
         {
-            foreach (var potentialSensor in KinectSensor.KinectSensors)
-            {
-                if (potentialSensor.Status == KinectStatus.Connected)
-                {
-                    this.sensor = potentialSensor;
-                    break;
-                }
-            }
 
-            if (null != this.sensor)
-            {
-                try
-                {
-                    // Start the sensor!
-                    this.sensor.Start();
-                }
-                catch (IOException)
-                {
-                    // Some other application is streaming from the same Kinect sensor
-                    this.sensor = null;
-                }
-            }
-
-            if (null == this.sensor)
-            {
-                return;
-            }
-
-            RecognizerInfo ri = GetKinectRecognizer();
-            // If we don't have a Kinect
-            if (ri == null)
-            {
-                SpeechRecognitionEngine se = new SpeechRecognitionEngine();
-                se.SetInputToDefaultAudioDevice();
-
-            }
+            SpeechRecognitionEngine se = new SpeechRecognitionEngine();
+            se.SetInputToDefaultAudioDevice();
+            RecognizerInfo ri = se.RecognizerInfo;
 
             if (null != ri)
             {
@@ -159,8 +110,9 @@ namespace Lightspeak
                 }
                 speechEngine.SpeechRecognized += SpeechRecognized;
                 speechEngine.UpdateRecognizerSetting("AdaptationOn", 0);
-                speechEngine.SetInputToAudioStream(
-                    sensor.AudioSource.Start(), new SpeechAudioFormatInfo(EncodingFormat.Pcm, 16000, 16, 1, 32000, 2, null));
+                //speechEngine.SetInputToAudioStream(
+                //    sensor.AudioSource.Start(), new SpeechAudioFormatInfo(EncodingFormat.Pcm, 16000, 16, 1, 32000, 2, null));
+                speechEngine.SetInputToDefaultAudioDevice();
                 speechEngine.RecognizeAsync(RecognizeMode.Multiple);
             }
             Network.Start();

@@ -9,6 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LIFXControl", "LIFXControl\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifxController", "LifxController\LifxController.csproj", "{60518415-CBC3-4503-B49B-0345C2A38E64}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lightspeak", "Lightspeak\Lightspeak.csproj", "{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FB3CC1E4-27C0-4D16-95E1-9685C4B15269}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +34,10 @@ Global
 		{60518415-CBC3-4503-B49B-0345C2A38E64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60518415-CBC3-4503-B49B-0345C2A38E64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60518415-CBC3-4503-B49B-0345C2A38E64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
