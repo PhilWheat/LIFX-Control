@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LIFXControlTest", "LIFXControlTest\LIFXControlTest.csproj", "{8656C2ED-A051-4325-8CAB-7E311C31F1B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LIFXControl", "LIFXControl\LIFXControl.csproj", "{920BCD65-2956-4986-8FCB-9CFD79240365}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifxController", "LifxController\LifxController.csproj", "{60518415-CBC3-4503-B49B-0345C2A38E64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lightspeak", "Lightspeak\Lightspeak.csproj", "{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +29,10 @@ Global
 		{60518415-CBC3-4503-B49B-0345C2A38E64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60518415-CBC3-4503-B49B-0345C2A38E64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60518415-CBC3-4503-B49B-0345C2A38E64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E24DF0C-2CF0-426B-AE96-547FCBD9F19C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

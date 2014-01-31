@@ -1,0 +1,65 @@
+﻿<grammar version="1.0" xml:lang="en-US" root="rootRule" tag-format="semantics/1.0-literals" xmlns="http://www.w3.org/2001/06/grammar">
+  <rule id="rootRule">
+    <one-of>
+      <item>
+        <tag>BRIGHTER</tag>
+        <item>lights</item>
+        <one-of>
+          <item> brighter </item>
+          <item> light </item>
+          <item> up </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>DIMMER</tag>
+        <item>lights</item>
+        <one-of>
+          <item> dimmer </item>
+          <item> down </item>
+        </one-of>
+      </item>
+      <item>
+        <item>lights</item>
+        <tag>RED</tag>
+        <one-of>
+          <item> red </item>
+        </one-of>
+      </item>
+      <item>
+        <item>lights</item>
+        <tag>BLUE</tag>
+        <one-of>
+          <item> blue </item>
+        </one-of>
+      </item>
+      <item>
+        <item>lights</item>
+        <tag>GREEN</tag>
+        <one-of>
+          <item> green </item>
+        </one-of>
+      </item>
+      <item>
+        <item>lights</item>
+        <tag>WHITE</tag>
+        <one-of>
+          <item> white </item>
+        </one-of>
+      </item>
+      <item>
+        <item>lights</item>       
+        <tag>ON</tag>
+        <one-of>
+          <item> on </item>
+        </one-of>
+      </item>
+      <item>
+        <item>lights</item>
+        <tag>OFF</tag>
+        <one-of>
+          <item> off </item>
+        </one-of>
+      </item>
+    </one-of>
+  </rule>
+</grammar>
