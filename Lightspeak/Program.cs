@@ -140,6 +140,13 @@ namespace Lightspeak
             }
 
             RecognizerInfo ri = GetKinectRecognizer();
+            // If we don't have a Kinect
+            if (ri == null)
+            {
+                SpeechRecognitionEngine se = new SpeechRecognitionEngine();
+                se.SetInputToDefaultAudioDevice();
+
+            }
 
             if (null != ri)
             {
