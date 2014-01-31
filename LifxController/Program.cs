@@ -87,7 +87,7 @@ namespace LifxController
         static LIFXNetwork Network;
         static void Main(string[] args)
         {
-            BulbCommand bc = ParseArguments(_("-scan", "-l='Lounge Room'", "-b=60000", "-h=0", "-s=0", "-k=3800", "-f=10"));
+            BulbCommand bc = ParseArguments(_(args));
             if (bc.help)
             {
                 const string usage_message =
