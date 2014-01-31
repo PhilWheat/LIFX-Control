@@ -147,14 +147,22 @@ namespace LifxController
             if (bc.list)
                 ListBulbs(Network.bulbs);
             else
+            {
+                if (bc.label.ToLower()=="all")
+                    SetAllBulbValues(ushort.Parse(bc.hue), ushort.Parse(bc.sat), ushort.Parse(bc.bright), ushort.Parse(bc.kelvin), uint.Parse(bc.fade));
+                else
                 SetBulbValue(ushort.Parse(bc.hue), ushort.Parse(bc.sat), ushort.Parse(bc.bright), ushort.Parse(bc.kelvin), uint.Parse(bc.fade), Network.bulbs, bc.label);
-
+            }
         }
         static void ListBulbs(LIFX.Bulbs bulbs)
         {
             Console.WriteLine("Bulbs:");
             foreach (LIFX.LIFXBulb bulb in bulbs)
                 Console.WriteLine("\t"+bulb.Label);
+        }
+        static void SetAllBulbValues(ushort hue, ushort saturation, ushort brightness, ushort kelvin, uint fade)
+        {
+            Network.SetAllBulbValues(hue, saturation, brightness, kelvin, fade, 1);
         }
         static void SetBulbValue(ushort hue, ushort saturation, ushort brightness, ushort kelvin, uint fade, Bulbs bulbs, string Label)
         {
