@@ -19,12 +19,14 @@ namespace LifxController
         {
             public bool help;
             public bool scan;
+            public bool list;
             public string hue;
             public string sat;
             public string bright;
             public string kelvin;
             public string fade;
             public string label;
+            public string scanduration;
             public BulbCommand()
             {
                 hue = "0";
@@ -32,9 +34,11 @@ namespace LifxController
                 bright = "0";
                 kelvin = "0";
                 fade = "0";
+                scanduration = "4";
                 label = "All";
                 help = false;
                 scan = false;
+                list = false;
             }
         }
         static BulbCommand ParseArguments(IEnumerable<string> args)
@@ -77,7 +81,13 @@ namespace LifxController
                 else if (arg.StartsWith("-label="))
                     bc.label = arg.Substring(7).Replace("'", "");
                 else if (arg.StartsWith("-scan") || arg.StartsWith("/scan"))
+                {
                     bc.scan = true;
+                    if (arg.Substring(1).StartsWith("scan="))
+                        bc.scanduration = arg.Substring(6);
+                }
+                else if (arg.StartsWith("-list"))
+                    bc.list = true;
                 else
                     bc.help = true;
             }
@@ -89,17 +99,14 @@ namespace LifxController
         {
             BulbCommand bc = ParseArguments(_(args));
             if (bc.help)
-            {
-                const string usage_message =
-                    "LifxController.exe /h[ue]=VALUE /s[aturation]=VALUE /b[rightness]=VALUE /k[elvin]=VALUE /f[ade]=VALUE /l[abel]=VALUE";
-                show_help(usage_message);
-            }
+                show_help();
+
             Network = new LIFXNetwork();
-            
+
             if (bc.scan)
             {
-                Network.Start();                
-                Thread.Sleep(4000);
+                Network.Start();
+                Thread.Sleep(int.Parse(bc.scanduration) * 1000);
                 Console.WriteLine("Found: " + Network.bulbs.Count + " bulb(s)");
                 Network.bulbs.SaveAs("Bulbs.xml");
                 Network.tcpGateways.SaveAs("Gateways.xml");
@@ -118,7 +125,7 @@ namespace LifxController
                 else
                 {
                     Console.WriteLine("No bulbs found, scanning anyway.");
-                    Network.Start();                
+                    Network.Start();
                     Thread.Sleep(4000);
                     Console.WriteLine("Found: " + Network.bulbs.Count + " bulb(s)");
                     Network.bulbs.SaveAs("Bulbs.xml");
@@ -130,14 +137,24 @@ namespace LifxController
                     //Connect bulb socket's to gateway endpoint
                     try
                     {
-                        if ((bg!=null) && (bg.Count>0))
+                        if ((bg != null) && (bg.Count > 0))
                             bulb.BulbSocket.Connect(bg[0].endPoint);
                     }
                     catch (System.Net.Sockets.SocketException) { }
                 }
-                            
-                SetBulbValue(ushort.Parse(bc.hue), ushort.Parse(bc.sat), ushort.Parse(bc.bright), ushort.Parse(bc.kelvin), uint.Parse(bc.fade), Network.bulbs, bc.label);
             }
+
+            if (bc.list)
+                ListBulbs(Network.bulbs);
+            else
+                SetBulbValue(ushort.Parse(bc.hue), ushort.Parse(bc.sat), ushort.Parse(bc.bright), ushort.Parse(bc.kelvin), uint.Parse(bc.fade), Network.bulbs, bc.label);
+
+        }
+        static void ListBulbs(LIFX.Bulbs bulbs)
+        {
+            Console.WriteLine("Bulbs:");
+            foreach (LIFX.LIFXBulb bulb in bulbs)
+                Console.WriteLine("\t"+bulb.Label);
         }
         static void SetBulbValue(ushort hue, ushort saturation, ushort brightness, ushort kelvin, uint fade, Bulbs bulbs, string Label)
         {
@@ -146,9 +163,34 @@ namespace LifxController
                     Network.SetBulbValues(hue, saturation, brightness, kelvin, fade, bulb);
         }
 
-        static void show_help(string message)
+        static void show_help()
         {
-            Console.Error.WriteLine(message);            
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("LifxController.exe\t-h[ue]=VALUE");
+            sb.AppendLine("\t\t\t-s[aturation]=VALUE");
+            sb.AppendLine("\t\t\t-b[right]=VALUE");
+            sb.AppendLine("\t\t\t-t[emp]=VALUE");
+            sb.AppendLine("\t\t\t-f[ade]=VALUE");
+            sb.AppendLine("\t\t\t-l[abel]=VALUE\n");
+            sb.AppendLine("\t\t\t-help\n");
+            sb.AppendLine("\t\t\t-scan[=VALUE]\n");
+            sb.AppendLine("hue\tHue value between 0 and 65,536\n\t(only valid if saturation is greater than zero.)\n");
+            sb.AppendLine("sat\tColour saturation value between 0 and 65,536\n");
+            sb.AppendLine("bright\tBrightness value between 0 and 65,536\n");
+            sb.AppendLine("temp\tColour temperare in Kelvin Value between 0 and 65,536");
+            sb.AppendLine("\tTypical colour values are:");
+            sb.AppendLine("\t\tcandle=1850-1930K");
+            sb.AppendLine("\t\tsunrise/sunset=2000-3000K");
+            sb.AppendLine("\t\thousehold incandescent=2500-2900K");
+            sb.AppendLine("\t\tdaylight=5500-6500K");
+            sb.AppendLine("\t\tovercast=6000-7500K");
+            sb.AppendLine("\t\tcloudy sky=8000-10000K\n");
+            sb.AppendLine("fade\tSeconds to fade between 0 and 65,536\n\t(only valid if saturation is greater than zero.)\n");
+            sb.AppendLine("label\tWhich bulb you want to control\n\t(All for all detected bulbs, use -list to list bulbs)\n");
+            sb.AppendLine("help\tThis help message\n");
+            sb.AppendLine("scan\tScan for bulbs, VALUE is in seconds\n");
+            sb.AppendLine("list\tList found bulbs\n");
+            Console.Error.WriteLine(sb.ToString());
             Environment.Exit(-1);
         }
 
