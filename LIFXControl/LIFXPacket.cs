@@ -6,6 +6,78 @@ using System.Threading.Tasks;
 
 namespace LIFX
 {
+#region Enums
+    public enum AppToBulb : ushort
+    { 
+        // Network
+        GetPanGateway = 0x02,
+        //Power
+        GetPowerState = 0x14,
+        SetPowerState = 0x15,
+        //Wireless
+        GetWifiInfo = 0x10,
+        GetWifiFirmwareState = 0x12,
+        GetWifiState = 0x12d,
+        SetWifiState = 0x12e,
+        GetAccessPoints = 0x130,
+        SetAccessPoint = 0x131,
+        //Labels and Tags
+        GetBulbLabel = 0x17,
+        SetBulbLabel = 0x18,
+        GetTags = 0x1a,
+        SetTags = 0x1b,
+        GetTagLabels = 0x1d,
+        SetTaglabels = 0x1e,
+        //Brightness and Colors
+        GetLightState = 0x65,
+        SetLightColor = 0x66,
+        SetWaveform = 0x67,
+        SetDimAbs = 0x68,
+        SetDimRel = 0x69,
+        //Time
+        GetTime = 0x04,
+        SetTime = 0x05,
+        //Diagnostic
+        GetResetSwitch = 0x07,
+        GetDummyLoad = 0x09,
+        SetDummyLoad = 0x0a,
+        GetMeshInfo = 0x0c,
+        GetMeshFirmware = 0x0e,
+        GetVersion = 0x20,
+        GetInfo = 0x22,
+        GetMCURailVoltage = 0x24,
+        Reboot = 0x26,
+        SetFactoryTestMode = 0x27,
+        DisableFactoryTestMode = 0x28
+    }
+    public enum BulbToApp : ushort
+    {
+        //Network
+        PanGateway = 0x03,
+        //Power
+        PowerState = 0x16,
+        //Wireless
+        WifiInfo = 0x11,
+        WifiFirmwareState = 0x13,
+        WifiState = 0x12f,
+        AccessPoint = 0x132,
+        //Labels and Tags
+        BulbLabel = 0x19,
+        Tags = 0x1c,
+        TagLabels = 0x1f,
+        //Brightness and Colors
+        LightStatus = 0x6b,
+        //Time
+        TimeState = 0x06,
+        //Diagnostic
+        ResetSwitchState = 0x08,
+        DummyLoad = 0x0b,
+        MeshInfo = 0x0d,
+        MeshFirmwareState = 0x0e,
+        VersionState = 0x21,
+        Info = 0x23,
+        MCURailVoltage = 0x25
+    }
     public enum INTERFACE : byte
     {
         SOFT_AP = 1, // i.e. act as an access point
@@ -46,6 +118,7 @@ namespace LIFX
         public byte[] month;
         public byte year;
     }
+#endregion
     public static class LIFXPacketFactory
     {
         public static LIFXPacket Getpacket()
@@ -108,6 +181,7 @@ namespace LIFX
                 break;
                 case 0x18:
                     packet = new LIFX_SetBulbLabel();
+                    packet.size = 36 + 32;  // packet + payload
                 break;
                 case 0x19:
                     packet = new LIFX_BulbLabel();
@@ -133,7 +207,7 @@ namespace LIFX
                 case 0x65:
                     packet = new LIFX_GetLightState();
                 break;
-                case 0x66:
+                case (UInt16)AppToBulb.SetLightColor:
                     packet = new LIFX_SetLightColor();
                 break;
                 case 0x67:
@@ -227,12 +301,17 @@ namespace LIFX
             LIFXPacket packet = null; ;
             switch (packetType)
             {
-                case 0x66:
+                case (UInt16)AppToBulb.SetLightColor:
                     packet = new LIFX_SetLightColor(bulb);
+                    break;
+                case (UInt16)AppToBulb.SetBulbLabel:
+                    packet = new LIFX_SetBulbLabel(bulb);
                     break;
                 default:
                     return null;
             }
+            packet.site = bulb.BulbGateWay;
+            packet.target_mac_address = bulb.BulbMac;
             packet.packet_type = packetType;
             if (packet.protocol == 0)
             { packet.protocol = 13312; }
@@ -290,7 +369,8 @@ namespace LIFX
         public LIFXPacket()
         {
             target_mac_address = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            site = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }; ;
+            site = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+            size = 36; 
         }
 
         public ushort size;                // LE
@@ -368,6 +448,7 @@ namespace LIFX
         // No Payload
         public LIFX_GetPowerState()
         {
+            size = 36;
         }
     }
     public class LIFX_SetPowerState : LIFXPacket
@@ -378,6 +459,7 @@ namespace LIFX
         public LIFX_SetPowerState()
         {
             OnOff = 1;
+            size = 36 + 2;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -398,6 +480,7 @@ namespace LIFX
         public LIFX_PowerState()
         {
             OnOff = 0;
+            size = 36 + 2;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -436,6 +519,7 @@ namespace LIFX
             Tx = 0;
             Rx = 0;
             Mcu_temperature = 0;
+            size = 36 + 14;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -460,6 +544,7 @@ namespace LIFX
         // No Payload
         public LIFX_GetWifiFirmwareState()
         {
+            size = 36;
         }
     }
     public class LIFX_WifiFirmwareState : LIFXPacket
@@ -498,6 +583,7 @@ namespace LIFX
         public LIFX_GetWifiState()
         {
             interface_type = 0;
+            size = 36 + 1;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -524,6 +610,7 @@ namespace LIFX
             wifi_status = 0;
             ip4_address = new byte[] { 0x00, 0x00, 0x00, 0x00 };
             ip6_address = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 , 0x00, 0x00, 0x00, 0x00};
+            size = 36 + 22;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -556,6 +643,7 @@ namespace LIFX
             wifi_status = 0;
             ip4_address = new byte[] { 0x00, 0x00, 0x00, 0x00 };
             ip6_address = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 , 0x00, 0x00, 0x00, 0x00};
+            size = 36 + 22;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -580,6 +668,7 @@ namespace LIFX
         // No Payload
         public LIFX_GetAccessPoints()
         {
+            size = 36;
         }
     }
     public class LIFX_SetAccessPoint : LIFXPacket
@@ -597,6 +686,7 @@ namespace LIFX
             ssid = new byte[32];
             password = new byte[64];
             security_protocol = SECURITY_PROTOCOL.OPEN;
+            size = 36 + 98;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -633,6 +723,7 @@ namespace LIFX
             security_protocol = SECURITY_PROTOCOL.OPEN;
             strength = 0;
             channel = 0;
+            size = 36 + 38;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -662,6 +753,7 @@ namespace LIFX
         // no payload
         public LIFX_GetBulbLabel()
         {
+            size = 36;
         }
     }
     public class LIFX_SetBulbLabel : LIFXPacket
@@ -672,11 +764,18 @@ namespace LIFX
         public LIFX_SetBulbLabel()
         {
             label = new byte[32];
+            size = 36 + 32;
+        }
+        public LIFX_SetBulbLabel(LIFXBulb bulb)
+        {
+            label = new byte[32];
+            Array.Copy(System.Text.Encoding.Default.GetBytes(bulb.Label), 0, label, 0, bulb.Label.Length);
+            size = 36 + 32;
         }
         public override byte[] GetPayloadBuffer()
         {
             byte[] payloadBuffer = new byte[32];
-            Array.Copy(label, 0, payloadBuffer, 0, 32);
+            Array.Copy(label, 0, payloadBuffer, 0, label.Length);
             return payloadBuffer;
         }
         public override void SetPayload(byte[] payloadBuffer)
@@ -692,6 +791,7 @@ namespace LIFX
         public LIFX_BulbLabel()
         {
             label = new byte[32];
+            size = 36 + 32;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -710,6 +810,7 @@ namespace LIFX
         // no payload
         public LIFX_GetTags()
         {
+            size = 36;
         }
     }
     public class LIFX_SetTags : LIFXPacket
@@ -720,6 +821,7 @@ namespace LIFX
         public LIFX_SetTags()
         {
             tags = 0;
+            size = 36 + 8;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -740,6 +842,7 @@ namespace LIFX
         public LIFX_Tags()
         {
             tags = 0;
+            size = 36 + 8;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -760,6 +863,7 @@ namespace LIFX
         public LIFX_GetTagLabels()
         {
             tags = 0;
+            size = 36 + 8;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -782,6 +886,7 @@ namespace LIFX
         {
             tags = 0;
             label = new byte[32];
+            size = 36 + 40;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -806,6 +911,7 @@ namespace LIFX
         {
             tags = 0;
             label = new byte[32];
+            size = 36 + 40;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -829,6 +935,7 @@ namespace LIFX
         // No payload.  Expect one or more 0x6b Light Status packets response
         public LIFX_GetLightState()
         {
+            size = 36;
         }
     }
     public class LIFX_SetLightColor : LIFXPacket
@@ -849,7 +956,7 @@ namespace LIFX
             brightness = 0;
             kelvin = 0;
             fadeTime = 0;
-            size = 49;
+            size = 36 + 13;
         }
         public LIFX_SetLightColor(LIFXBulb bulb)
         {
@@ -910,6 +1017,7 @@ namespace LIFX
             cycles = 0;
             dutyCycles = 0;
             waveform = 0;
+            size = 36 +21;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -950,6 +1058,7 @@ namespace LIFX
         {
             brightness = 0;
             duration = 0;
+            size = 36 + 6;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -975,6 +1084,7 @@ namespace LIFX
         {
             brightness = 0;
             duration = 0;
+            size = 36 + 6;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1013,6 +1123,7 @@ namespace LIFX
             power = 0;
             bulb_label = "";
             tags = 0;
+            size = 36 + 52;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1049,16 +1160,19 @@ namespace LIFX
         // No Payload - expect a 0x05 - Time State packet in response
         public LIFX_GetTime()
         {
+            size = 36;
         }
 
     }
     public class LIFX_SetTime : LIFXPacket
     {
         // Packet type 0x05 - app to bulb
+        // 8 byte payload
         public UInt64 time;
         public LIFX_SetTime()
         {
             time = 0;
+            size = 36 + 8;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1074,10 +1188,12 @@ namespace LIFX
     public class LIFX_TimeState : LIFXPacket
     {
         // Packet type 0x06 - app to bulb
+        // 8 byte payload
         public UInt64 time;
         public LIFX_TimeState()
         {
             time = 0;
+            size = 36 + 8;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1099,6 +1215,7 @@ namespace LIFX
         // No Payload.  Expect a 0x08 Reset Switch State packet in response.
         public LIFX_GetResetSwitch()
         {
+            size = 36;
         }
     }
     public class LIFX_ResetSwtichState : LIFXPacket
@@ -1109,6 +1226,7 @@ namespace LIFX
         {
             //Just arbitrary - should never set here.
             resetSwitchPosition = RESET_SWITCH_POSITION.UP;
+            size = 36 + 2;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1165,6 +1283,7 @@ namespace LIFX
         // No Payload - Expect 0x0d Mesh Info packet in response
         public LIFX_GetMeshInfo()
         {
+            size = 36;
         }
     }
     public class LIFX_MeshInfo : LIFXPacket
@@ -1177,6 +1296,7 @@ namespace LIFX
         public short mcu_temperature;
         public LIFX_MeshInfo()
         {
+            size = 36 + 14;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1201,6 +1321,7 @@ namespace LIFX
         // No Payload - Expect a 0x0f Mesh Firmware State packet in response
         public LIFX_GetMeshFirmware()
         {
+            size = 36;
         }
     }
     public class LIFX_MeshFirmwareState : LIFXPacket
@@ -1265,6 +1386,7 @@ namespace LIFX
         // No Payload.  Expect 0x21 Version State packet in response.
         public LIFX_GetVersion()
         {
+            size = 36;
         }
     }
     public class LIFX_VersionState : LIFXPacket
@@ -1301,6 +1423,7 @@ namespace LIFX
         // No Payload.  Expect packet 0x23 Info packet in response
         public LIFX_GetInfo()
         {
+            size = 36;
         }
     }
     public class LIFX_Info : LIFXPacket
@@ -1315,6 +1438,7 @@ namespace LIFX
             time = 0;
             uptime = 0;
             downtime = 0;
+            size = 36 + 24;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1337,6 +1461,7 @@ namespace LIFX
         // No Payload.  Expect Packet 0x25 MCU Rail Voltage in response.
         public LIFX_GetMCURailVoltage()
         {
+            size = 36;
         }
     }
     public class LIFX_MCURailVoltage : LIFXPacket
@@ -1347,6 +1472,7 @@ namespace LIFX
         public LIFX_MCURailVoltage()
         {
             voltage = 0;
+            size = 36 +4;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1365,6 +1491,7 @@ namespace LIFX
         // No payload.  No packet response expected
         public LIFX_Reboot()
         {
+            size = 36;
         }
     }
     public class LIFX_SetFactoryTestMode : LIFXPacket
@@ -1375,6 +1502,7 @@ namespace LIFX
         public LIFX_SetFactoryTestMode()
         {
             unknown = 1;
+            size = 36 +1;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1393,6 +1521,7 @@ namespace LIFX
         // No payload.  No packet response expected
         public LIFX_DisableFactoryTestMode()
         {
+            size = 36;
         }
     }
 }

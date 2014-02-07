@@ -60,6 +60,7 @@ namespace LIFXControlTest
                             bulbListBox.SelectedItems.Add(bulb);
                         }
                     }
+                    bulbListBox.Items.Refresh();
                 }
             }
             if (Network.ColorCycleBulbs)
@@ -115,6 +116,28 @@ namespace LIFXControlTest
             {
                 bulb.UXSelected = false;
             }
+            // Just for the test - fill in the first current selected bulb's label
+            if (bulbListBox.SelectedItems.Count > 0)
+            {
+                LIFXBulb b = (LIFXBulb)bulbListBox.SelectedItems[0];
+                BulbLabelText.Text = b.Label;
+            }
+
+        }
+
+        private void RenameTest_Click(object sender, RoutedEventArgs e)
+        {
+            //LIFX_SetBulbLabel packet = (LIFX_SetBulbLabel) LIFXPacketFactory.Getpacket(0x18);
+            //packet.label = System.Text.Encoding.UTF8.GetBytes("Bulb A5");
+            //packet.target_mac_address = Network.bulbs[0].BulbMac;
+            //packet.site = Network.bulbs[0].BulbGateWay;
+            //Network.bulbs[0].SendPacket((LIFXPacket)packet);
+            //Network.Inventory();
+            foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+            {
+                bulb.SetLabel(BulbLabelText.Text);
+            }
+
         }
 
     }

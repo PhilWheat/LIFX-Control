@@ -16,6 +16,8 @@ namespace LIFX
 {
     public enum NetworkState { UnInitialized, Discovery, Initialized };
 
+    #region BulbGateway definitions
+
     [Serializable]
     [XmlRoot("BulbGateway")]
     public class BulbGateway
@@ -43,7 +45,7 @@ namespace LIFX
             gateWaySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
     }
-
+    
     [Serializable]
     [XmlRoot("BulbGateways")]
     public class BulbGateways : BindingList<BulbGateway>
@@ -108,7 +110,9 @@ namespace LIFX
             return t;
         }
     }
+#endregion
 
+    #region Bulb Object Definition
     [Serializable]
     [XmlRoot("Bulbs")]
     public class Bulbs : BindingList<LIFXBulb>
@@ -119,8 +123,6 @@ namespace LIFX
             get { return filename; }
             set { filename = value; }
         }
-
-
         public void Save()
         {
             this.SaveAs(filename);
@@ -247,8 +249,9 @@ namespace LIFX
             {
                 BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
             }
-            catch (Exception)
-            { 
+            catch (Exception e)
+            {
+                string Error = "true";
             }
         }
         public void SendBuffer(byte[] buffer)
@@ -261,8 +264,17 @@ namespace LIFX
             { 
             }
         }
+        public void SetLabel(string Label)
+        {
+            this.Label = Label;
+            LIFXPacket packet = LIFXPacketFactory.Getpacket((UInt16)AppToBulb.SetBulbLabel, this);
+            BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
+            packet = LIFXPacketFactory.Getpacket((UInt16)AppToBulb.GetLightState);
+            BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
+        }
 
     }
+    #endregion
 
     public class LIFXNetwork
     {
@@ -330,8 +342,7 @@ namespace LIFX
         }
 
         public void Stop()
-        { 
-
+        {
         }
 
         public void NetworkHeartbeat(Object stateInfo)
@@ -611,8 +622,7 @@ namespace LIFX
                             {
                                 if (packet is LIFX_LightStatus)
                                 {
-                                    //int bulbMatch = bulbs.FindIndex(p => p.BulbMac.SequenceEqual(packet.target_mac_address));
-                                    //UpdateBulb((LIFX_LightStatus)packet, bulbs[bulbMatch]);
+                                    // Have to find out which one matches.
                                     foreach (LIFXBulb b in bulbs)
                                     {
                                         if (b.BulbMac.SequenceEqual(packet.target_mac_address))
