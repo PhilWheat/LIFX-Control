@@ -206,7 +206,7 @@ namespace LIFX
 
         public LIFXBulb()
         {
-            BulbSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        BulbSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
         // Should only be changed by the object
@@ -411,10 +411,11 @@ namespace LIFX
             LIFXPacket packet = LIFXPacketFactory.Getpacket((UInt16)packetType, this);
             if (!BulbSocket.Connected)
             {
-                BulbSocket.Connect(BulbSocket.RemoteEndPoint);
+                if (BulbSocket.RemoteEndPoint!=null)
+                    BulbSocket.Connect(BulbSocket.RemoteEndPoint);
             }
             BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
-            //TODO Review if we need to get a confirming packet for the command.
+            // TODO Review if we need to get a confirming packet for the command.
             //if ((packetType == AppToBulb.SetBulbLabel) ||
             //packet = LIFXPacketFactory.Getpacket((UInt16)AppToBulb.GetLightState);
             //BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));

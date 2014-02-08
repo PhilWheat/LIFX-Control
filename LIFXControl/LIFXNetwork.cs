@@ -162,7 +162,7 @@ namespace LIFX
                         bulb = new LIFXBulb();
                         bulb.BulbMac = ReceivedPacket.target_mac_address;
                         bulb.BulbGateWay = ReceivedPacket.site;
-                        bulb.BulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);
+                        bulb.BulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);                    
                         bulbs.Add(bulb);
                 }
                 // Timing for the read, this really shouldn't be here.
