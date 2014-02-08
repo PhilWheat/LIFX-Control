@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Xml.Serialization;
-namespace LifxController
+namespace LIFX.LifxController
 {
     [Serializable]
     public class SerializableBulb
     {
         public byte[] BulbGateWay;
         public byte[] BulbMac;
+        public const int Port = 56700;
         public byte[] bulbEndpoint
         {
                 get
@@ -21,7 +22,7 @@ namespace LifxController
                     else
                         return null;
                 }
-                set { BulbEndpoint = new IPEndPoint(new IPAddress(value), 56700); }
+                set { BulbEndpoint = new IPEndPoint(new IPAddress(value), Port); }
             }
             [XmlIgnore]
             public IPEndPoint BulbEndpoint;

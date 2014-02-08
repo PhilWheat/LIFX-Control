@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LIFX;
 using System.Threading;
 
-namespace LifxController
+namespace LIFX.LifxController
 {
     class Program
     {
@@ -15,32 +15,7 @@ namespace LifxController
             return a;
         }
 
-        class BulbCommand
-        {
-            public bool help;
-            public bool scan;
-            public bool list;
-            public string hue;
-            public string sat;
-            public string bright;
-            public string kelvin;
-            public string fade;
-            public string label;
-            public string scanduration;
-            public BulbCommand()
-            {
-                hue = "0";
-                sat = "0";
-                bright = "0";
-                kelvin = "0";
-                fade = "0";
-                scanduration = "4";
-                label = "All";
-                help = false;
-                scan = false;
-                list = false;
-            }
-        }
+        
         static BulbCommand ParseArguments(IEnumerable<string> args)
         {
             BulbCommand bc = new BulbCommand();
@@ -108,19 +83,20 @@ namespace LifxController
                 Network.Start();
                 Thread.Sleep(int.Parse(bc.scanduration) * 1000);
                 Console.WriteLine("Found: " + Network.bulbs.Count + " bulb(s)");
-                Network.bulbs.SaveAs("Bulbs.xml");
-                Network.tcpGateways.SaveAs("Gateways.xml");
+                SerializableBulbs bulbs = new SerializableBulbs(Network.bulbs);
+                bulbs.SaveAs("Bulbs.xml");
+                //Network.tcpGateways.SaveAs("Gateways.xml");
             }
             else
             {
                 Network.Setup();
-                Bulbs b = (Bulbs)Bulbs.Load("Bulbs.xml");
-                BulbGateways bg = (BulbGateways)BulbGateways.Load("Gateways.xml");
+                SerializableBulbs b = (SerializableBulbs)SerializableBulbs.Load("Bulbs.xml");
+                //BulbGateways bg = (BulbGateways)BulbGateways.Load("Gateways.xml");
 
                 if (b.Count > 0)
                 {
-                    Network.bulbs = b;
-                    Network.tcpGateways = bg;
+                    Network.bulbs = b.LIFXBulbs;
+                    //Network.tcpGateways = bg;
                 }
                 else
                 {
@@ -128,20 +104,21 @@ namespace LifxController
                     Network.Start();
                     Thread.Sleep(4000);
                     Console.WriteLine("Found: " + Network.bulbs.Count + " bulb(s)");
-                    Network.bulbs.SaveAs("Bulbs.xml");
-                    Network.tcpGateways.SaveAs("Gateways.xml");
+                    SerializableBulbs bulbs = new SerializableBulbs(Network.bulbs);
+                    bulbs.SaveAs("Bulbs.xml");
+                  //  Network.tcpGateways.SaveAs("Gateways.xml");
                 }
 
-                foreach (LIFX.LIFXBulb bulb in Network.bulbs)
-                {
+               // foreach (LIFX.LIFXBulb bulb in Network.bulbs)
+               // {
                     //Connect bulb socket's to gateway endpoint
-                    try
-                    {
-                        if ((bg != null) && (bg.Count > 0))
-                            bulb.BulbSocket.Connect(bg[0].endPoint);
-                    }
-                    catch (System.Net.Sockets.SocketException) { }
-                }
+                  //  try
+                  //  {
+                    //    if ((bg != null) && (bg.Count > 0))
+                    //        bulb.BulbSocket.Connect(bg[0].endPoint);
+                  //  }
+                 //   catch (System.Net.Sockets.SocketException) { }
+               // }
             }
 
             if (bc.list)
@@ -151,10 +128,10 @@ namespace LifxController
                 if (bc.label.ToLower()=="all")
                     SetAllBulbValues(ushort.Parse(bc.hue), ushort.Parse(bc.sat), ushort.Parse(bc.bright), ushort.Parse(bc.kelvin), uint.Parse(bc.fade));
                 else
-                SetBulbValue(ushort.Parse(bc.hue), ushort.Parse(bc.sat), ushort.Parse(bc.bright), ushort.Parse(bc.kelvin), uint.Parse(bc.fade), Network.bulbs, bc.label);
+                    SetBulbValue(ushort.Parse(bc.hue), ushort.Parse(bc.sat), ushort.Parse(bc.bright), ushort.Parse(bc.kelvin), uint.Parse(bc.fade), Network.bulbs, bc.label);
             }
         }
-        static void ListBulbs(LIFX.Bulbs bulbs)
+        static void ListBulbs(List<LIFX.LIFXBulb> bulbs)
         {
             Console.WriteLine("Bulbs:");
             foreach (LIFX.LIFXBulb bulb in bulbs)
@@ -164,7 +141,7 @@ namespace LifxController
         {
             Network.SetAllBulbValues(hue, saturation, brightness, kelvin, fade, 1);
         }
-        static void SetBulbValue(ushort hue, ushort saturation, ushort brightness, ushort kelvin, uint fade, Bulbs bulbs, string Label)
+        static void SetBulbValue(ushort hue, ushort saturation, ushort brightness, ushort kelvin, uint fade, List<LIFXBulb> bulbs, string Label)
         {
             foreach (LIFX.LIFXBulb bulb in bulbs)
                 if (bulb.Label == Label)

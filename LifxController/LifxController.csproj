@@ -41,9 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BulbCommand.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializableBulb.cs" />
+    <Compile Include="SerializableBulbs.cs" />
+    <Compile Include="XmlWriterNoDeclaration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
