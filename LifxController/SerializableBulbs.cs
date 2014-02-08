@@ -45,6 +45,10 @@ namespace LIFX.LifxController
         }
         public SerializableBulbs(List<LIFX.LIFXBulb> bulbs)            
         {
+            foreach (LIFXBulb bulb in bulbs)
+            {
+                this.Add(new SerializableBulb(bulb));
+            }
         }
         public SerializableBulbs()
         {

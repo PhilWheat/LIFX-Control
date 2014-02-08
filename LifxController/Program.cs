@@ -77,48 +77,36 @@ namespace LIFX.LifxController
                 show_help();
 
             Network = new LIFXNetwork();
-
+            SerializableBulbs bulbs;
             if (bc.scan)
             {
                 Network.Start();
                 Thread.Sleep(int.Parse(bc.scanduration) * 1000);
                 Console.WriteLine("Found: " + Network.bulbs.Count + " bulb(s)");
-                SerializableBulbs bulbs = new SerializableBulbs(Network.bulbs);
+                bulbs = new SerializableBulbs(Network.bulbs);
                 bulbs.SaveAs("Bulbs.xml");
-                //Network.tcpGateways.SaveAs("Gateways.xml");
             }
             else
             {
                 Network.Setup();
-                SerializableBulbs b = (SerializableBulbs)SerializableBulbs.Load("Bulbs.xml");
-                //BulbGateways bg = (BulbGateways)BulbGateways.Load("Gateways.xml");
+                Console.WriteLine("Loading saved bulb state information.");
+                bulbs = (SerializableBulbs)SerializableBulbs.Load("Bulbs.xml");
 
-                if (b.Count > 0)
+                if (bulbs.Count > 0)
                 {
-                    Network.bulbs = b.LIFXBulbs;
-                    //Network.tcpGateways = bg;
+                    Console.WriteLine("Found: " + bulbs.Count + " bulb(s)");
+                    Network.bulbs = bulbs.LIFXBulbs;
                 }
                 else
                 {
-                    Console.WriteLine("No bulbs found, scanning anyway.");
+                    Console.WriteLine("No bulbs found in saved bulb state, scanning network.");
                     Network.Start();
-                    Thread.Sleep(4000);
-                    Console.WriteLine("Found: " + Network.bulbs.Count + " bulb(s)");
-                    SerializableBulbs bulbs = new SerializableBulbs(Network.bulbs);
+                    Thread.Sleep(int.Parse(bc.scanduration)*1000);
+                    
+                    bulbs = new SerializableBulbs(Network.bulbs);
+                    Console.WriteLine("Found: " + bulbs.Count + " bulb(s)");
                     bulbs.SaveAs("Bulbs.xml");
-                  //  Network.tcpGateways.SaveAs("Gateways.xml");
                 }
-
-               // foreach (LIFX.LIFXBulb bulb in Network.bulbs)
-               // {
-                    //Connect bulb socket's to gateway endpoint
-                  //  try
-                  //  {
-                    //    if ((bg != null) && (bg.Count > 0))
-                    //        bulb.BulbSocket.Connect(bg[0].endPoint);
-                  //  }
-                 //   catch (System.Net.Sockets.SocketException) { }
-               // }
             }
 
             if (bc.list)

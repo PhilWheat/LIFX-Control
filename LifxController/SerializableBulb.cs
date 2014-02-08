@@ -15,25 +15,33 @@ namespace LIFX.LifxController
         public const int Port = 56700;
         public byte[] bulbEndpoint
         {
-                get
-                {
-                    if (BulbEndpoint != null)
-                        return BulbEndpoint.Address.GetAddressBytes();
-                    else
-                        return null;
-                }
-                set { BulbEndpoint = new IPEndPoint(new IPAddress(value), Port); }
-            }
-            [XmlIgnore]
-            public IPEndPoint BulbEndpoint;
-
-            public LIFX.LIFXBulb GetLIFXBulb()
+            get
             {
-                LIFX.LIFXBulb bulb = new LIFX.LIFXBulb();
-                bulb.BulbMac = BulbMac;
-                bulb.BulbGateWay = BulbGateWay;
-                return bulb;
+                if (BulbEndpoint != null)
+                    return BulbEndpoint.Address.GetAddressBytes();
+                else
+                    return null;
             }
+            set { BulbEndpoint = new IPEndPoint(new IPAddress(value), Port); }
+        }
+        [XmlIgnore]
+        public IPEndPoint BulbEndpoint;
+
+        public SerializableBulb()
+        {
+        }
+        public SerializableBulb(LIFXBulb bulb)
+        {
+            this.BulbGateWay = bulb.BulbGateWay;
+            this.BulbMac = bulb.BulbMac;
+        }
+        public LIFX.LIFXBulb GetLIFXBulb()
+        {
+            LIFX.LIFXBulb bulb = new LIFX.LIFXBulb();
+            bulb.BulbMac = BulbMac;
+            bulb.BulbGateWay = BulbGateWay;
+            return bulb;
+        }
 
     }
 }
