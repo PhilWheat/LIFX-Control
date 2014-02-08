@@ -83,7 +83,13 @@ namespace LIFX
         SOFT_AP = 1, // i.e. act as an access point
         STATION = 2  // i.e. connect to an existing access point
     }
-
+    public enum WIFI_STATUS : byte
+    {
+        CONNECTING = 0,
+        CONNECTED = 1,
+        FAILED = 2,
+        OFF = 3
+    }
     public enum SECURITY_PROTOCOL : byte
     {
        OPEN           = 1,
@@ -131,6 +137,7 @@ namespace LIFX
             LIFXPacket packet = null; ;
             switch (packetType)
             { 
+                //TODO update to Enum for readability.
                 case 0x02:
                     packet = new LIFX_GetPANGateWay();
                 break;
@@ -298,7 +305,7 @@ namespace LIFX
 
         public static LIFXPacket Getpacket(UInt16 packetType, LIFXBulb bulb)
         {
-            LIFXPacket packet = null; ;
+            LIFXPacket packet;
             switch (packetType)
             {
                 case (UInt16)AppToBulb.SetLightColor:
@@ -307,8 +314,39 @@ namespace LIFX
                 case (UInt16)AppToBulb.SetBulbLabel:
                     packet = new LIFX_SetBulbLabel(bulb);
                     break;
+                case (UInt16)AppToBulb.SetPowerState:
+                    packet = new LIFX_SetPowerState(bulb);
+                    break;
+                case (UInt16)AppToBulb.SetWifiState:
+                    packet = new LIFX_SetWifiState(bulb);
+                    break;
+                case (UInt16)AppToBulb.SetTags:
+                    packet = new LIFX_SetTags(bulb);
+                    break;
+                case (UInt16)AppToBulb.GetTagLabels:
+                    packet = new LIFX_GetTagLabels(bulb);
+                    break;
+                case (UInt16)AppToBulb.SetTaglabels:
+                    packet = new LIFX_SetTagLabels(bulb);
+                    break;
+                case (UInt16)AppToBulb.SetWaveform:
+                    packet = new LIFX_SetWaveForm(bulb);
+                    break;
+                case (UInt16)AppToBulb.SetDimAbs:
+                    packet = new LIFX_SetDimAbsolute(bulb);
+                    break;
+                case (UInt16)AppToBulb.SetDimRel:
+                    packet = new LIFX_SetDimRelative(bulb);
+                    break;
+                case (UInt16)AppToBulb.SetTime:
+                    packet = new LIFX_SetTime(bulb);
+                    break;
+                case (UInt16)AppToBulb.SetFactoryTestMode:
+                    packet = new LIFX_SetFactoryTestMode(bulb);
+                    break;
                 default:
-                    return null;
+                    packet = Getpacket(packetType);
+                    break;
             }
             packet.site = bulb.BulbGateWay;
             packet.target_mac_address = bulb.BulbMac;
@@ -320,7 +358,6 @@ namespace LIFX
             return packet;
 
         }
-
         public static LIFXPacket Getpacket(byte[] packetBuffer)
         {
             UInt16 packetType = BitConverter.ToUInt16(packetBuffer, 32);
@@ -342,8 +379,6 @@ namespace LIFX
 
             return newPacket;
         }
-
-
         public static byte[] PacketToBuffer(LIFXPacket encodePacket)
         {
             byte[] buffer = new byte[encodePacket.size];
@@ -362,7 +397,6 @@ namespace LIFX
             return buffer;
         }
     }
-
     [Serializable]
     public class LIFXPacket
     {
@@ -455,42 +489,55 @@ namespace LIFX
     {
         // Packet type 0x15 - app to bulb
         // 2 Byte Payload
-        public UInt16 OnOff = 1;
+        public ONOFF OnOff = ONOFF.ON;
         public LIFX_SetPowerState()
         {
-            OnOff = 1;
+            OnOff = ONOFF.ON;
+            size = 36 + 2;
+        }
+        public LIFX_SetPowerState(LIFXBulb bulb)
+        {
+            OnOff = bulb.Power_State;
             size = 36 + 2;
         }
         public override byte[] GetPayloadBuffer()
         {
             byte[] payloadBuffer = new byte[2];
-            Array.Copy(BitConverter.GetBytes(OnOff), 0, payloadBuffer, 36, 2);
+            Array.Copy(BitConverter.GetBytes((UInt16)OnOff), 0, payloadBuffer, 0, 2);
             return payloadBuffer;
         }
         public override void SetPayload(byte[] payloadBuffer)
         {
-            OnOff = BitConverter.ToUInt16(payloadBuffer, 0);
+            UInt16 value = BitConverter.ToUInt16(payloadBuffer, 0);
+            if (value == 0)
+            { OnOff = ONOFF.OFF;}
+            else
+            {OnOff = ONOFF.ON;}
         }
     }
     public class LIFX_PowerState : LIFXPacket
     {
         // Packet type 0x16 - bulb to app
         // 2 byte payload
-        public UInt16 OnOff = 0;
+        public ONOFF OnOff;
         public LIFX_PowerState()
         {
-            OnOff = 0;
+            OnOff = ONOFF.ON;
             size = 36 + 2;
         }
         public override byte[] GetPayloadBuffer()
         {
             byte[] payloadBuffer = new byte[2];
-            Array.Copy(BitConverter.GetBytes(OnOff), 0, payloadBuffer, 36, 2);
+            Array.Copy(BitConverter.GetBytes((UInt16)OnOff), 0, payloadBuffer, 36, 2);
             return payloadBuffer;
         }
         public override void SetPayload(byte[] payloadBuffer)
         {
-            OnOff = BitConverter.ToUInt16(payloadBuffer, 0);
+            UInt16 value = BitConverter.ToUInt16(payloadBuffer, 0);
+            if (value == 0)
+            { OnOff = ONOFF.OFF; }
+            else
+            { OnOff = ONOFF.ON; }
         }
     }
     /// <summary>
@@ -600,8 +647,8 @@ namespace LIFX
     {
         // Packet type 0x12e - app to bulb
         // 22 byte payload
-        public byte interface_type;
-        public byte wifi_status;
+        public INTERFACE interface_type;
+        public WIFI_STATUS wifi_status;
         public byte[] ip4_address;
         public byte[] ip6_address;
         public LIFX_SetWifiState()
@@ -612,19 +659,47 @@ namespace LIFX
             ip6_address = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 , 0x00, 0x00, 0x00, 0x00};
             size = 36 + 22;
         }
+        public LIFX_SetWifiState(LIFXBulb bulb)
+        {
+            interface_type = bulb.interface_type;
+            wifi_status = bulb.wifi_status;
+            ip4_address = bulb.ip4_address;
+            ip6_address = bulb.ip6_address;
+            size = 36 + 22;
+        }
         public override byte[] GetPayloadBuffer()
         {
             byte[] payloadBuffer = new byte[22];
-            payloadBuffer[0] = interface_type;
-            payloadBuffer[1] = wifi_status;
+            payloadBuffer[0] = (byte)interface_type;
+            payloadBuffer[1] = (byte)wifi_status;
             Array.Copy(ip4_address, 0, payloadBuffer, 2, 4);
             Array.Copy(ip6_address, 0, payloadBuffer, 8, 8);
             return payloadBuffer;
         }
         public override void SetPayload(byte[] payloadBuffer)
         {
-            interface_type = payloadBuffer[0];
-            wifi_status = payloadBuffer[1];
+            byte value1 = payloadBuffer[0];
+            if (value1 == 1)
+            { interface_type = INTERFACE.SOFT_AP; }
+            else
+            { interface_type = INTERFACE.STATION; }
+            value1 = payloadBuffer[1];
+            switch(value1)
+            {
+                case 1:
+                    wifi_status = WIFI_STATUS.CONNECTED;
+                break;
+                case 2:
+                    wifi_status = WIFI_STATUS.CONNECTING;
+                break;
+                case 3:
+                    wifi_status = WIFI_STATUS.FAILED;
+                break;
+                default:
+                    wifi_status = WIFI_STATUS.OFF;
+                break;
+
+            }
             Array.Copy(payloadBuffer, 0, ip4_address, 2, 4);
             Array.Copy(payloadBuffer, 8, ip6_address, 6, 16);
         }
@@ -633,8 +708,8 @@ namespace LIFX
     {
         // Packet type 0x12f - bulb to app
         // 22 byte payload
-        public byte interface_type;
-        public byte wifi_status;
+        public INTERFACE interface_type;
+        public WIFI_STATUS wifi_status;
         public byte[] ip4_address;
         public byte[] ip6_address;
         public LIFX_WifiState()
@@ -648,18 +723,38 @@ namespace LIFX
         public override byte[] GetPayloadBuffer()
         {
             byte[] payloadBuffer = new byte[22];
-            payloadBuffer[0] = interface_type;
-            payloadBuffer[1] = wifi_status;
+            payloadBuffer[0] = (byte)interface_type;
+            payloadBuffer[1] = (byte)wifi_status;
             Array.Copy(ip4_address, 0, payloadBuffer, 2, 4);
-            Array.Copy(ip6_address, 0, payloadBuffer, 8, 8);
+            Array.Copy(ip6_address, 0, payloadBuffer, 6, 16);
             return payloadBuffer;
         }
         public override void SetPayload(byte[] payloadBuffer)
         {
-            interface_type = payloadBuffer[0];
-            wifi_status = payloadBuffer[1];
-            Array.Copy(payloadBuffer, 0, ip4_address, 2, 4);
-            Array.Copy(payloadBuffer, 8, ip6_address, 6, 16);
+            byte value1 = payloadBuffer[0];
+            if (value1 == 1)
+            { interface_type = INTERFACE.SOFT_AP; }
+            else
+            { interface_type = INTERFACE.STATION; }
+            value1 = payloadBuffer[1];
+            switch (value1)
+            {
+                case 1:
+                    wifi_status = WIFI_STATUS.CONNECTED;
+                    break;
+                case 2:
+                    wifi_status = WIFI_STATUS.CONNECTING;
+                    break;
+                case 3:
+                    wifi_status = WIFI_STATUS.FAILED;
+                    break;
+                default:
+                    wifi_status = WIFI_STATUS.OFF;
+                    break;
+
+            }
+            Array.Copy(payloadBuffer, 2, ip4_address, 0, 4);
+            Array.Copy(payloadBuffer, 6, ip6_address, 0, 16);
         }
     }
     public class LIFX_GetAccessPoints : LIFXPacket
@@ -686,6 +781,14 @@ namespace LIFX
             ssid = new byte[32];
             password = new byte[64];
             security_protocol = SECURITY_PROTOCOL.OPEN;
+            size = 36 + 98;
+        }
+        public LIFX_SetAccessPoint(LIFXBulb bulb)
+        {
+            interface_type = bulb.interface_type;
+            ssid = bulb.ssid;
+            password = bulb.password;
+            security_protocol = bulb.security_protocol;
             size = 36 + 98;
         }
         public override byte[] GetPayloadBuffer()
@@ -715,7 +818,6 @@ namespace LIFX
         public SECURITY_PROTOCOL security_protocol;
         public UInt16 strength;
         public UInt16 channel;
-
         public LIFX_AccessPoint()
         {
             interface_type = INTERFACE.STATION;
@@ -823,6 +925,11 @@ namespace LIFX
             tags = 0;
             size = 36 + 8;
         }
+        public LIFX_SetTags(LIFXBulb bulb)
+        {
+            tags = bulb.Tags;
+            size = 36 + 8;
+        }
         public override byte[] GetPayloadBuffer()
         {
             byte[] payloadBuffer = new byte[8];
@@ -865,6 +972,11 @@ namespace LIFX
             tags = 0;
             size = 36 + 8;
         }
+        public LIFX_GetTagLabels(LIFXBulb bulb)
+        {
+            tags = bulb.Tags;
+            size = 36 + 8;
+        }
         public override byte[] GetPayloadBuffer()
         {
             byte[] payloadBuffer = new byte[8];
@@ -888,6 +1000,12 @@ namespace LIFX
             label = new byte[32];
             size = 36 + 40;
         }
+        public LIFX_SetTagLabels(LIFXBulb bulb)
+        {
+            tags = bulb.Tags;
+            label = System.Text.Encoding.Default.GetBytes(bulb.TagLabel);
+            size = 36 + 40;
+        }
         public override byte[] GetPayloadBuffer()
         {
             byte[] payloadBuffer = new byte[8];
@@ -906,11 +1024,17 @@ namespace LIFX
         // Packet type 0x1f - bulb to app
         // 40 byte payload
         public UInt64 tags;
-        byte[] label;
+        public byte[] label;
         public LIFX_TagLabels()
         {
             tags = 0;
             label = new byte[32];
+            size = 36 + 40;
+        }
+        public LIFX_TagLabels(LIFXBulb bulb)
+        {
+            tags = bulb.Tags;
+            label = System.Text.Encoding.Default.GetBytes(bulb.TagLabel);
             size = 36 + 40;
         }
         public override byte[] GetPayloadBuffer()
@@ -923,7 +1047,7 @@ namespace LIFX
         public override void SetPayload(byte[] payloadBuffer)
         {
             tags = BitConverter.ToUInt64(payloadBuffer, 0);
-            Array.Copy(payloadBuffer, 1, label, 0, 32);
+            Array.Copy(payloadBuffer, 8, label, 0, 32);
         }
     }
     /// <summary>
@@ -994,16 +1118,18 @@ namespace LIFX
     {
         // Packet type 0x67 - app to bulb
         // 21 byte payload
+        // Same as SetLightColor
         public byte stream;
-        public byte transient;
         public UInt16 hue;
         public UInt16 saturation;
         public UInt16 brightness;
         public UInt16 kelvin;
+        //New fields
         public UInt32 period;
         public float cycles;
         public UInt16 dutyCycles;
         public byte waveform;
+        public byte transient;
 
         public LIFX_SetWaveForm()
         {
@@ -1018,6 +1144,20 @@ namespace LIFX
             dutyCycles = 0;
             waveform = 0;
             size = 36 +21;
+        }
+        public LIFX_SetWaveForm(LIFXBulb bulb)
+        {
+            stream = 0; // Watch this for protocol updates
+            transient = bulb.transient;
+            hue = bulb.Hue;
+            saturation = bulb.Saturation;
+            brightness = bulb.Brightness;
+            kelvin = bulb.Kelvin;
+            period = bulb.period;
+            cycles = bulb.cycles;
+            dutyCycles = bulb.dutyCycles;
+            waveform = bulb.waveform;
+            size = 36 + 21;
         }
         public override byte[] GetPayloadBuffer()
         {
@@ -1060,6 +1200,12 @@ namespace LIFX
             duration = 0;
             size = 36 + 6;
         }
+        public LIFX_SetDimAbsolute(LIFXBulb bulb)
+        {
+            brightness = bulb.Dim;
+            duration = bulb.Time_Delay;
+            size = 36 + 6;
+        }
         public override byte[] GetPayloadBuffer()
         {
             byte[] payloadBuffer = new byte[6];
@@ -1084,6 +1230,12 @@ namespace LIFX
         {
             brightness = 0;
             duration = 0;
+            size = 36 + 6;
+        }
+        public LIFX_SetDimRelative(LIFXBulb bulb)
+        {
+            brightness = bulb.Dim;
+            duration = bulb.Time_Delay;
             size = 36 + 6;
         }
         public override byte[] GetPayloadBuffer()
@@ -1172,6 +1324,11 @@ namespace LIFX
         public LIFX_SetTime()
         {
             time = 0;
+            size = 36 + 8;
+        }
+        public LIFX_SetTime(LIFXBulb bulb)
+        {
+            time = bulb.time;
             size = 36 + 8;
         }
         public override byte[] GetPayloadBuffer()
@@ -1365,6 +1522,7 @@ namespace LIFX
             fwBuild.minute = payloadBuffer[1];
             fwBuild.hour = payloadBuffer[2];
             fwBuild.day = payloadBuffer[3];
+            fwBuild.month = new byte[3];
             fwBuild.month[0] = payloadBuffer[4];
             fwBuild.month[1] = payloadBuffer[5];
             fwBuild.month[2] = payloadBuffer[6];
@@ -1373,6 +1531,7 @@ namespace LIFX
             fwInstall.minute = payloadBuffer[9];
             fwInstall.hour = payloadBuffer[10];
             fwInstall.day = payloadBuffer[11];
+            fwInstall.month = new byte[3];
             fwInstall.month[0] = payloadBuffer[12];
             fwInstall.month[1] = payloadBuffer[13];
             fwInstall.month[2] = payloadBuffer[14];
@@ -1503,6 +1662,11 @@ namespace LIFX
         {
             unknown = 1;
             size = 36 +1;
+        }
+        public LIFX_SetFactoryTestMode(LIFXBulb bulb)
+        {
+            unknown = bulb.testmode;
+            size = 36 + 1;
         }
         public override byte[] GetPayloadBuffer()
         {

@@ -52,6 +52,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bulbs.cs" />
     <Compile Include="LIFXNetwork.cs" />
     <Compile Include="LIFXPacket.cs" />
     <Compile Include="XmlWriterNoDeclaration.cs" />

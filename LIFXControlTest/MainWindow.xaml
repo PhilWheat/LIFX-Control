@@ -24,7 +24,8 @@
         <TextBox x:Name="CycleStep" HorizontalAlignment="Left" Height="23" Margin="360,182,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120" ToolTip="Step for color Cycle "/>
         <ListBox x:Name="bulbListBox" HorizontalAlignment="Left" Height="117" Margin="31,255,0,0" VerticalAlignment="Top" Width="435" SelectionMode="Multiple" SelectionChanged="bulbListBox_SelectionChanged"/>
         <Button x:Name="RenameTest" Content="Rename" HorizontalAlignment="Left" Margin="31,377,0,0" VerticalAlignment="Top" Width="75" Click="RenameTest_Click"/>
-        <TextBox x:Name="BulbLabelText" HorizontalAlignment="Left" Height="23" Margin="123,377,0,0" TextWrapping="Wrap" Text="Label" VerticalAlignment="Top" Width="171"/>
+        <TextBox x:Name="BulbLabelText" HorizontalAlignment="Left" Height="23" Margin="123,377,0,0" TextWrapping="Wrap" Text="Label" VerticalAlignment="Top" Width="171" KeyDown="Value_KeyDown"/>
+        <Button x:Name="TestButton" Content="Read Test" HorizontalAlignment="Left" Margin="391,377,0,0" VerticalAlignment="Top" Width="75" Click="TestButton_Click"/>
 
     </Grid>
 

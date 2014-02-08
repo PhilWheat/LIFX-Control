@@ -98,10 +98,60 @@ namespace LIFXControlTest
         {
             if (e.Key == Key.Enter)
             {
-                foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+                if (sender is TextBox)
                 {
-                    Network.SetBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), bulb);
-                    Thread.Sleep(Convert.ToUInt16(PacketDelay.Text));
+                    TextBox senderBox = sender as TextBox;
+                    switch (senderBox.Name)
+                    {
+                        case "HueValue":
+                            foreach (LIFXBulb bulb in Network.bulbs)
+                            {
+                                if (bulb.UXSelected)
+                                { bulb.Hue = Convert.ToUInt16(HueValue.Text); }
+                            }
+                            break;
+                        case "SaturationValue":
+                            foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+                            {
+                                if (bulb.UXSelected)
+                                { bulb.Saturation = Convert.ToUInt16(SaturationValue.Text); }
+                            }
+                            break;
+                        case "BrightnessValue":
+                            foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+                            { 
+                                if (bulb.UXSelected)
+                                {bulb.Brightness = Convert.ToUInt16(BrightnessValue.Text); }
+                            }
+
+                            break;
+                        case "KelvinValue":
+                            foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+                            { 
+                                if (bulb.UXSelected)
+                                {bulb.Kelvin = Convert.ToUInt16(KelvinValue.Text); }
+                            }
+                            break;
+                        case "FadeValue":
+                            foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+                            { 
+                                if (bulb.UXSelected)
+                                {bulb.Time_Delay = Convert.ToUInt16(FadeValue.Text); }
+                            }
+                            break;
+                        case "BulbLabelText":
+                            foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+                            { 
+                                if (bulb.UXSelected)
+                                {bulb.Label = BulbLabelText.Text; }
+                            }
+                            break;
+                    }
+                    //foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+                    //{
+                    //    Network.SetBulbValues(Convert.ToUInt16(HueValue.Text), Convert.ToUInt16(SaturationValue.Text), Convert.ToUInt16(BrightnessValue.Text), Convert.ToUInt16(KelvinValue.Text), Convert.ToUInt32(FadeValue.Text), bulb);
+                    //    Thread.Sleep(Convert.ToUInt16(PacketDelay.Text));
+                    //}
                 }
             }
         }
@@ -138,6 +188,28 @@ namespace LIFXControlTest
                 bulb.SetLabel(BulbLabelText.Text);
             }
 
+        }
+
+        private void TestButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (LIFXBulb bulb in bulbListBox.SelectedItems)
+            {
+                bulb.BatchMode = true;
+                bulb.SendPacket(AppToBulb.GetPowerState);
+                bulb.SendPacket(AppToBulb.GetWifiInfo);
+                bulb.SendPacket(AppToBulb.GetWifiFirmwareState);
+                bulb.SendPacket(AppToBulb.GetWifiState);
+                bulb.SendPacket(AppToBulb.GetTags);
+                bulb.SendPacket(AppToBulb.GetTagLabels); // Should have picked up Tags with the previous step, maybe delay?
+                bulb.SendPacket(AppToBulb.GetAccessPoints);
+                bulb.SendPacket(AppToBulb.GetTime);
+                bulb.SendPacket(AppToBulb.GetResetSwitch);
+                bulb.SendPacket(AppToBulb.GetMeshInfo);
+                bulb.SendPacket(AppToBulb.GetMeshFirmware);
+                bulb.SendPacket(AppToBulb.GetVersion);
+                bulb.SendPacket(AppToBulb.GetInfo);
+                bulb.SendPacket(AppToBulb.GetMCURailVoltage);
+            }
         }
 
     }

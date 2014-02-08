@@ -16,266 +16,6 @@ namespace LIFX
 {
     public enum NetworkState { UnInitialized, Discovery, Initialized };
 
-    #region BulbGateway definitions
-
-    [Serializable]
-    [XmlRoot("BulbGateway")]
-    public class BulbGateway
-    {
-        public byte[] _endPoint
-        {
-            get
-            {
-                if (endPoint != null)
-                    return endPoint.Address.GetAddressBytes();
-                else
-                    return null;
-            }
-            set { endPoint = new IPEndPoint(new IPAddress(value), 56700); }
-        }
-
-        [XmlIgnore]
-        public IPEndPoint endPoint;
-        [XmlIgnore]
-        public Socket gateWaySocket;
-        public byte[] gatewayMac;
-
-        public BulbGateway()
-        {
-            gateWaySocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        }
-    }
-    
-    [Serializable]
-    [XmlRoot("BulbGateways")]
-    public class BulbGateways : BindingList<BulbGateway>
-    {
-        string filename;
-        public string Filename
-        {
-            get { return filename; }
-            set { filename = value; }
-        }
-
-
-        public void Save()
-        {
-            this.SaveAs(filename);
-        }
-        public void SaveAs(string filename)
-        {
-            if (this.Count > 0)
-            {
-                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
-                XmlSerializer x = new XmlSerializer(typeof(BulbGateways));
-                ns.Add("", "");
-
-                StringWriter sw = new StringWriter();
-                XmlWriter writer = new XmlWriterNoDeclaration(sw);
-                x.Serialize(writer, this, ns);
-
-                StreamWriter fs = File.CreateText(filename);
-                fs.Write(sw.ToString());
-                fs.Close();
-            }
-        }
-        public static BulbGateways Load(string filename)
-        {
-            Debug.WriteLine(DateTime.Now.ToString() + ": Entering BulbGateways.Load(string filename)");
-            BulbGateways t;
-            if (File.Exists(filename))
-            {
-                try
-                {
-                    XmlSerializer x = new XmlSerializer(typeof(BulbGateways));
-                    using (StreamReader sr = new StreamReader(filename))
-                    t = (BulbGateways)x.Deserialize(sr);
-                    t.Filename = filename;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(DateTime.Now.ToString() + ": Error deserializing '" + filename + "', bailing!");
-                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.Message);
-                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.StackTrace);
-                    t = new BulbGateways();
-                    t.Filename = filename;
-                }
-            }
-            else
-            {
-                t = new BulbGateways();
-                t.Filename = filename;
-            }
-            Debug.WriteLine(DateTime.Now.ToString() + ": Finished SerializableBindingList.Load(string filename)");
-            return t;
-        }
-    }
-#endregion
-
-    #region Bulb Object Definition
-    [Serializable]
-    [XmlRoot("Bulbs")]
-    public class Bulbs : BindingList<LIFXBulb>
-    {
-        string filename;
-        public string Filename
-        {
-            get { return filename; }
-            set { filename = value; }
-        }
-        public void Save()
-        {
-            this.SaveAs(filename);
-        }
-        public void SaveAs(string filename)
-        {
-            if (this.Count > 0)
-            {
-                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
-                XmlSerializer x = new XmlSerializer(typeof(Bulbs));
-                ns.Add("", "");
-
-                StringWriter sw = new StringWriter();
-                XmlWriter writer = new XmlWriterNoDeclaration(sw);
-                x.Serialize(writer, this, ns);
-
-                StreamWriter fs = File.CreateText(filename);
-                fs.Write(sw.ToString());
-                fs.Close();
-            }
-        }
-        public static Bulbs Load(string filename)
-        {
-            Debug.WriteLine(DateTime.Now.ToString() + ": Entering Bulbs.Load(string filename)");
-            Bulbs t;
-            if (File.Exists(filename))
-            {
-                try
-                {
-                    XmlSerializer x = new XmlSerializer(typeof(Bulbs));
-                    using (StreamReader sr = new StreamReader(filename))
-                    t = (Bulbs)x.Deserialize(sr);
-                    t.Filename = filename;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(DateTime.Now.ToString() + ": Error deserializing '" + filename + "', bailing!");
-                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.Message);
-                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.StackTrace);
-                    t = new Bulbs();
-                    t.Filename = filename;
-                }
-            }
-            else
-            {
-                t = new Bulbs();
-                t.Filename = filename;
-            }
-            Debug.WriteLine(DateTime.Now.ToString() + ": Finished SerializableBindingList.Load(string filename)");
-            return t;
-        }
-    }
-
-    [Serializable]
-    [XmlRoot("Bulb")]
-    public class LIFXBulb
-    {
-        // Should not change for the life of the bulb object
-        public byte[] BulbMac;
-        public byte[] BulbGateWay;
-        
-
-        public byte[] bulbEndpoint
-        {
-            get
-            {
-                if (BulbEndpoint != null)
-                    return BulbEndpoint.Address.GetAddressBytes();
-                else
-                    return null;
-            }
-            set { BulbEndpoint = new IPEndPoint(new IPAddress(value), 56700); }
-        }
-        [XmlIgnore]
-        public IPEndPoint BulbEndpoint;
-        
-        [XmlIgnore]
-        public Socket BulbSocket;
-
-        public LIFXBulb()
-        {
-            BulbSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        }
-
-
-        // Should only be changed by the object
-        public DateTime LastNetworkUpdate;
-        public bool HasUpdates;
-        public bool BatchMode;
-
-        // Can be updated 
-        private UInt16 _Hue;
-        public UInt16 Hue
-        {
-            get { return _Hue; }
-            set { _Hue = value; }
-        }
-        public UInt16 Saturation;
-        public UInt16 Brightness;
-        public UInt16 Kelvin;
-        public UInt16 Time_Delay;
-        public UInt16 Power;
-        public UInt16 Dim;
-
-        public byte Power_State;
-        public string Label;
-        public UInt64 Tags;
-
-        // Used by controller to identify bulbs for bulk operations
-        public bool UXSelected;
-
-        public override string ToString()
-        {
-            string stringText = Label + "   :   " + BitConverter.ToString(BulbGateWay) + "   :   " + BitConverter.ToString(BulbMac) + "   :   ";
-            if (BulbEndpoint != null)
-            {
-                stringText += BulbEndpoint.Address.ToString();
-            }
-            return stringText;
-        }
-        public void SendPacket(LIFXPacket packet)
-        {
-            try
-            {
-                BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
-            }
-            catch (Exception e)
-            {
-                string Error = "true";
-            }
-        }
-        public void SendBuffer(byte[] buffer)
-        {
-            try
-            {
-            BulbSocket.Send(buffer);
-            }
-            catch (Exception)
-            { 
-            }
-        }
-        public void SetLabel(string Label)
-        {
-            this.Label = Label;
-            LIFXPacket packet = LIFXPacketFactory.Getpacket((UInt16)AppToBulb.SetBulbLabel, this);
-            BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
-            packet = LIFXPacketFactory.Getpacket((UInt16)AppToBulb.GetLightState);
-            BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
-        }
-
-    }
-    #endregion
-
     public class LIFXNetwork
     {
         public NetworkState State = NetworkState.UnInitialized;
@@ -526,6 +266,7 @@ namespace LIFX
         public void AddBulb(LIFX_LightStatus stat, Socket gwSocket)
         {
             LIFXBulb bulb = new LIFXBulb();
+            bulb.BatchMode = true;
             bulb.BulbGateWay = stat.site;
             bulb.BulbMac = stat.target_mac_address;
             bulb.Label = stat.bulb_label.TrimEnd(charsToTrim);
@@ -534,10 +275,11 @@ namespace LIFX
             bulb.Kelvin = stat.kelvin;
             bulb.Brightness = stat.brightness;
             bulb.Power = stat.power;
-            bulb.Dim = stat.dim;
+            bulb.Dim = (Int16)stat.dim;
             bulb.Tags = stat.tags;
             bulb.BulbSocket = gwSocket;
             bulb.LastNetworkUpdate = DateTime.Now;
+            bulb.BatchMode = false;
             bulbs.Add(bulb);
         }
 
@@ -549,6 +291,7 @@ namespace LIFX
  
         public void UpdateBulb(LIFX_LightStatus packet, LIFXBulb bulb)
         {
+            bulb.BatchMode = true;
             bulb.BulbMac = packet.target_mac_address;
             bulb.Label = packet.bulb_label.TrimEnd(charsToTrim);
             bulb.Hue = packet.hue;
@@ -556,9 +299,10 @@ namespace LIFX
             bulb.Kelvin = packet.kelvin;
             bulb.Brightness = packet.brightness;
             bulb.Power = packet.power;
-            bulb.Dim = packet.dim;
+            bulb.Dim = (Int16)packet.dim;
             bulb.Tags = packet.tags;
             bulb.LastNetworkUpdate = DateTime.Now;
+            bulb.BatchMode = false;
         }
 
         /// <summary>
@@ -592,11 +336,12 @@ namespace LIFX
         {
             if (!reEntrant)
             {
+                reEntrant = true;
                 LIFXBulb bulb = new LIFXBulb();
                 LIFXPacket packet = null;
                 byte[] readBuffer;
                 int readBytes;
-                reEntrant = true;
+
                 foreach (BulbGateway gateway in tcpGateways)
                 {
                     readBuffer = new byte[gateway.gateWaySocket.Available];
@@ -609,32 +354,129 @@ namespace LIFX
 
                             if (!bulbs.Any(p => p.BulbMac.SequenceEqual(packet.target_mac_address)))
                             {
-                                if (packet is LIFX_LightStatus)
-                                {
-                                    AddBulb((LIFX_LightStatus)packet, gateway.gateWaySocket);
-                                }
-                                else
+                                switch (packet.packet_type)
                                 { 
-                                    
+                                    case ((ushort) BulbToApp.LightStatus):
+                                        AddBulb((LIFX_LightStatus)packet, gateway.gateWaySocket);
+                                    break;
+                                    default:
+                                    //TODO need to do some logging
+                                    string hmm = "this really shouldn't happen";
+                                    break;
                                 }
                             }
                             else
                             {
-                                if (packet is LIFX_LightStatus)
-                                {
+                                //if (packet is LIFX_LightStatus)
+                                //{
                                     // Have to find out which one matches.
                                     foreach (LIFXBulb b in bulbs)
                                     {
                                         if (b.BulbMac.SequenceEqual(packet.target_mac_address))
-                                            UpdateBulb((LIFX_LightStatus)packet, b);
+                                        { 
+                                            // Now process packet type
+                                            // First set batch mode to true to not try to set the incoming value on the bulb again
+                                            bulb.BatchMode = true;
+                                            switch (packet.packet_type)
+                                            {
+                                                case ((ushort)BulbToApp.LightStatus):
+                                                    UpdateBulb((LIFX_LightStatus)packet, b);
+                                                    break;
+                                                case ((ushort)BulbToApp.PowerState):
+                                                    LIFX_PowerState ps = (LIFX_PowerState)packet;
+                                                    b.Power_State = ps.OnOff;
+                                                    break;
+                                                case ((ushort)BulbToApp.WifiInfo):
+                                                    LIFX_WifiInfo wf = (LIFX_WifiInfo)packet;
+                                                    b.Signal = wf.Signal;
+                                                    b.Tx = wf.Tx;
+                                                    b.Rx = wf.Rx;
+                                                    b.Mcu_temperature = wf.Mcu_temperature;
+                                                    break;
+                                                case ((ushort)BulbToApp.WifiFirmwareState):
+                                                    LIFX_WifiFirmwareState wffs = (LIFX_WifiFirmwareState)packet;
+                                                    b.Wifi_Firmware_BuildTime = wffs.buildTimestamp;
+                                                    b.Wifi_Firmware_InstallTime = wffs.installTimestamp;
+                                                    break;
+                                                case ((ushort)BulbToApp.WifiState):
+                                                    LIFX_WifiState wfs = (LIFX_WifiState)packet;
+                                                    bulb.wifi_status = wfs.wifi_status;
+                                                    bulb.interface_type = wfs.interface_type;
+                                                    bulb.ip4_address = wfs.ip4_address;
+                                                    bulb.ip6_address = wfs.ip6_address;
+                                                    break;
+                                                case ((ushort)BulbToApp.AccessPoint):
+                                                    LIFX_AccessPoint acp1 = (LIFX_AccessPoint)packet;
+                                                    bulb.interface_type = acp1.interface_type;
+                                                    bulb.ssid = acp1.ssid;
+                                                    bulb.security_protocol = acp1.security_protocol;
+                                                    bulb.strength = acp1.strength;
+                                                    bulb.channel = acp1.channel;
+                                                    break;
+                                                case ((ushort)BulbToApp.BulbLabel):
+                                                    LIFX_BulbLabel bl1 = (LIFX_BulbLabel)packet;
+                                                    bulb.Label = System.Text.Encoding.Default.GetString(bl1.label);
+                                                    break;
+                                                case ((ushort)BulbToApp.Tags):
+                                                    LIFX_Tags tg1 = (LIFX_Tags)packet;
+                                                    break;
+                                                case ((ushort)BulbToApp.TagLabels):
+                                                    LIFX_TagLabels tl1 = (LIFX_TagLabels)packet;
+                                                    bulb.TagLabel = System.Text.Encoding.Default.GetString(tl1.label);
+                                                    break;
+                                                case ((ushort)BulbToApp.TimeState):
+                                                    LIFX_TimeState ts1 = (LIFX_TimeState)packet;
+                                                    bulb.time = ts1.time;
+                                                    break;
+                                                case ((ushort)BulbToApp.ResetSwitchState):
+                                                    LIFX_ResetSwtichState rss1 = (LIFX_ResetSwtichState)packet;
+                                                    bulb.resetSwitchPosition = rss1.resetSwitchPosition;
+                                                    break;
+                                                case ((ushort)BulbToApp.MeshInfo):
+                                                    LIFX_MeshInfo mi1 = (LIFX_MeshInfo)packet;
+                                                    bulb.mesh_signal = mi1.signal;
+                                                    bulb.mesh_rx = mi1.rx;
+                                                    bulb.mesh_tx = mi1.tx;
+                                                    bulb.mesh_mcu_temperature = mi1.mcu_temperature;
+                                                    break;
+                                                case ((ushort)BulbToApp.MeshFirmwareState):
+                                                    LIFX_MeshFirmwareState mfs1 = (LIFX_MeshFirmwareState)packet;
+                                                    bulb.fwBuild = mfs1.fwBuild;
+                                                    bulb.fwInstall = mfs1.fwInstall;
+                                                    bulb.fwVersion = mfs1.fwVersion;
+                                                    break;
+                                                case ((ushort)BulbToApp.VersionState):
+                                                    LIFX_VersionState vst1 = (LIFX_VersionState)packet;
+                                                    bulb.bulb_vendor = vst1.bulb_vendor;
+                                                    bulb.bulb_version = vst1.bulb_version;
+                                                    bulb.bulb_product = vst1.bulb_product;
+                                                    break;
+                                                case ((ushort)BulbToApp.Info):
+                                                    LIFX_Info inf1 = (LIFX_Info)packet;
+                                                    bulb.time =inf1.time;
+                                                    bulb.uptime = inf1.uptime;
+                                                    bulb.downtime = inf1.downtime;
+                                                    break;
+                                                case ((ushort)BulbToApp.MCURailVoltage):
+                                                    LIFX_MCURailVoltage mcr1 = (LIFX_MCURailVoltage)packet;
+                                                    bulb.voltage = mcr1.voltage;
+                                                    break;
+                                                default:
+                                                    //TODO need to do some logging
+                                                    string hmm = "Unknown or Invalid packet type";
+                                                    break;
+                                            }
+                                            // Done our updates, turn off batch mode
+                                            bulb.BatchMode = false;
+                                        }
                                     }
-                                }
+                                //}
                             }
                             InPackets.Enqueue(LIFXPacketFactory.Getpacket(readBuffer));
                         }
-                        catch (Exception)
-                        { }
-                        if (packet.size < readBuffer.Length)
+                        catch (Exception e)
+                        { string etext = e.Message; }
+                        if (packet.size <= readBuffer.Length)
                         {
                             int remainingBuffer = readBuffer.Length - packet.size;
                             byte[] newBuffer = new byte[remainingBuffer];
