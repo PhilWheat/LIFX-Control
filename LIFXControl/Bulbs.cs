@@ -109,6 +109,12 @@ namespace LIFX
     }
     #endregion
 
+    public class BulbEvent
+    { 
+        public DateTime EventTime;
+        public LIFXPacket EventPacket;
+    }
+
     #region Bulb Object Definition
     [Serializable]
     [XmlRoot("Bulbs")]
@@ -305,6 +311,7 @@ namespace LIFX
         public Int16 Dim;
         public UInt64 Tags;
         public string TagLabel;
+        public List<BulbEvent> PacketEvents = new List<BulbEvent>();
 
         // General information from the protocol.  Read only from bulbs.
         // Note some items do have a set packet, doesn't seem to make sense.
@@ -412,7 +419,36 @@ namespace LIFX
             //packet = LIFXPacketFactory.Getpacket((UInt16)AppToBulb.GetLightState);
             //BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
         }
-
+        public void DelaySetColorValues(UInt16 hue, UInt16 saturation, UInt16 brightness, UInt16 kelvin, UInt32 fade, DateTime toDo)
+        {
+            LIFX_SetLightColor setpacket = (LIFX_SetLightColor)LIFXPacketFactory.Getpacket(0x66);
+            setpacket.hue = hue;
+            setpacket.saturation = saturation;
+            setpacket.brightness = brightness;
+            setpacket.kelvin = kelvin;
+            setpacket.fadeTime = ((fade) * 225) ^ 2;
+            setpacket.size = 49;
+            BulbEvent be = new BulbEvent();
+            be.EventPacket = setpacket;
+            be.EventTime = toDo;
+            PacketEvents.Add(be);
+            PacketEvents.Sort((x, y) => DateTime.Compare(x.EventTime, y.EventTime));
+        }
+        public void DelaySetColorValues(UInt16 hue, UInt16 saturation, UInt16 brightness, UInt16 kelvin, UInt32 fade, TimeSpan packetDelay)
+        {
+            LIFX_SetLightColor setpacket = (LIFX_SetLightColor)LIFXPacketFactory.Getpacket(0x66);
+            setpacket.hue = hue;
+            setpacket.saturation = saturation;
+            setpacket.brightness = brightness;
+            setpacket.kelvin = kelvin;
+            setpacket.fadeTime = ((fade) * 225) ^ 2;
+            setpacket.size = 49;
+            BulbEvent be = new BulbEvent();
+            be.EventPacket = setpacket;
+            be.EventTime = DateTime.Now + packetDelay;
+            PacketEvents.Add(be);
+            PacketEvents.Sort((x, y) => DateTime.Compare(x.EventTime, y.EventTime));
+        }
     }
     #endregion
 }

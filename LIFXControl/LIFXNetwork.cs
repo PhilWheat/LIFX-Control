@@ -79,6 +79,21 @@ namespace LIFX
                 Inventory();
                 pingTimer = DateTime.Now.AddMinutes(1);
             }
+            foreach (LIFXBulb bulb in bulbs)
+            {
+                if (bulb.PacketEvents.Count > 0)
+                {
+                    if (bulb.PacketEvents.First().EventTime < DateTime.Now)
+                    {
+                        LIFXPacket packet = bulb.PacketEvents.First().EventPacket;
+                        bulb.PacketEvents.Remove(bulb.PacketEvents.First());
+                        packet.site = bulb.BulbGateWay;
+                        packet.target_mac_address = bulb.BulbMac;
+                        bulb.SendPacket(packet);
+
+                    }
+                }
+            }
         }
 
         public void Stop()
