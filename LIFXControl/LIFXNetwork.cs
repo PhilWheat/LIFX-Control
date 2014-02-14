@@ -56,7 +56,26 @@ namespace LIFX
             Inventory();
             Setup();
         }
-
+        /// <summary>
+        /// This overload bypasses the inventory and bulb polling.
+        /// It is here for momentary events such as command line tools, the bulb collection should be de-serialized before calling this method.
+        /// </summary>
+        /// <param name="IPAddress"></param>
+        /// <param name="Port"></param>
+        /// <param name="MAC"></param>
+        public void Start (String IPAddress, String Port, byte[] MAC)
+        {
+            LIFXBulb bulb = new LIFXBulb();
+            bulb.BulbMac = MAC;
+            bulb.BulbGateWay = MAC;
+            IPEndPoint gatewayEndPoint = new IPEndPoint(new IPAddress(System.Text.Encoding.Default.GetBytes(IPAddress)), Convert.ToInt32(Port));
+            bulb.BulbEndpoint = gatewayEndPoint;
+            bulbs.Add(bulb);
+            foreach (LIFXBulb bulbiterate in bulbs)
+            { 
+                bulb.BulbEndpoint = gatewayEndPoint;
+            }
+        }
         private void NetworkPoll(object state)
         {
             if (ColorCycleBulbs)
@@ -90,7 +109,6 @@ namespace LIFX
                         packet.site = bulb.BulbGateWay;
                         packet.target_mac_address = bulb.BulbMac;
                         bulb.SendPacket(packet);
-
                     }
                 }
             }

@@ -7,9 +7,9 @@ using System.Speech.Recognition;
 using System.Speech.AudioFormat;
 //using Microsoft.Speech.AudioFormat;
 //using Microsoft.Speech.Recognition;
-using LIFX;
 using System.IO;
 using System.Threading;
+using LIFX;
 
 namespace Lightspeak
 {

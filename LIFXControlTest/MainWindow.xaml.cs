@@ -209,7 +209,13 @@ namespace LIFXControlTest
                 bulb.SendPacket(AppToBulb.GetVersion);
                 bulb.SendPacket(AppToBulb.GetInfo);
                 bulb.SendPacket(AppToBulb.GetMCURailVoltage);
-                bulb.DelaySetColorValues(24000, 65000, 10000, 0, 0, new TimeSpan(0, 0, 10));
+                bulb.DelaySetColorValues(24000, 65000, 10000, 0, 10000, new TimeSpan(0, 0, 10));
+                bulb.DelaySetColorValues(34000, 65000, 20000, 0, 10000, new TimeSpan(0, 1, 0));
+                bulb.DelaySetColorValues(44000, 65000, 30000, 0, 10000, new TimeSpan(0, 2, 0));
+                bulb.DelaySetColorValues(54000, 65000, 50000, 0, 10000, new TimeSpan(0, 3, 0));
+                bulb.DelaySetColorValues(44000, 65000, 0, 0, 10000, new TimeSpan(0, 10, 0));
+                bulb.DelaySetColorValues(54000, 0, 40000, 4000, 10000, new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + 1, 08, 00, 00));
+
             }
         }
 
