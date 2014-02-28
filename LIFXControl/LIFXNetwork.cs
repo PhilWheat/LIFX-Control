@@ -19,12 +19,12 @@ namespace LIFX
     public class LIFXNetwork
     {
         public NetworkState State = NetworkState.UnInitialized;
-        public BulbGateways tcpGateways;
+        public List<BulbGateway> tcpGateways;
 
         public Queue<LIFXPacket> OutPackets = new Queue<LIFXPacket>();
         public Queue<LIFXPacket> InPackets = new Queue<LIFXPacket>();
         
-        public Bulbs bulbs = new Bulbs();
+        public List<LIFXBulb> bulbs = new List<LIFXBulb>();
 
         char[] charsToTrim = { '\0'};
         private bool reEntrant = false;
@@ -180,7 +180,7 @@ namespace LIFX
                         bulb = new LIFXBulb();
                         bulb.BulbMac = ReceivedPacket.target_mac_address;
                         bulb.BulbGateWay = ReceivedPacket.site;
-                        bulb.BulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);
+                        bulb.BulbEndpoint = new IPEndPoint(RemoteIpEndPoint.Address, 56700);                    
                         bulbs.Add(bulb);
                 }
                 // Timing for the read, this really shouldn't be here.
@@ -198,7 +198,7 @@ namespace LIFX
             receivingUdpClient.Close();
 
             //Now extract and populate the Gateways
-            tcpGateways = new BulbGateways();
+            tcpGateways = new List<BulbGateway>();
 
             foreach (LIFXBulb bulbEnum in bulbs)
             {

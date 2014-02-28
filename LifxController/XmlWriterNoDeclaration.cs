@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.IO;
 
-namespace LIFX
+namespace LIFX.LifxController
 {
     public class XmlWriterNoDeclaration : XmlTextWriter
     {

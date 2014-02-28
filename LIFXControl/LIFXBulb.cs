@@ -15,8 +15,7 @@ namespace LIFX
 {
     #region BulbGateway definitions
 
-    [Serializable]
-    [XmlRoot("BulbGateway")]
+    
     public class BulbGateway
     {
         public byte[] _endPoint
@@ -43,70 +42,6 @@ namespace LIFX
         }
     }
 
-    [Serializable]
-    [XmlRoot("BulbGateways")]
-    public class BulbGateways : BindingList<BulbGateway>
-    {
-        string filename;
-        public string Filename
-        {
-            get { return filename; }
-            set { filename = value; }
-        }
-
-
-        public void Save()
-        {
-            this.SaveAs(filename);
-        }
-        public void SaveAs(string filename)
-        {
-            if (this.Count > 0)
-            {
-                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
-                XmlSerializer x = new XmlSerializer(typeof(BulbGateways));
-                ns.Add("", "");
-
-                StringWriter sw = new StringWriter();
-                XmlWriter writer = new XmlWriterNoDeclaration(sw);
-                x.Serialize(writer, this, ns);
-
-                StreamWriter fs = File.CreateText(filename);
-                fs.Write(sw.ToString());
-                fs.Close();
-            }
-        }
-        public static BulbGateways Load(string filename)
-        {
-            Debug.WriteLine(DateTime.Now.ToString() + ": Entering BulbGateways.Load(string filename)");
-            BulbGateways t;
-            if (File.Exists(filename))
-            {
-                try
-                {
-                    XmlSerializer x = new XmlSerializer(typeof(BulbGateways));
-                    using (StreamReader sr = new StreamReader(filename))
-                        t = (BulbGateways)x.Deserialize(sr);
-                    t.Filename = filename;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(DateTime.Now.ToString() + ": Error deserializing '" + filename + "', bailing!");
-                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.Message);
-                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.StackTrace);
-                    t = new BulbGateways();
-                    t.Filename = filename;
-                }
-            }
-            else
-            {
-                t = new BulbGateways();
-                t.Filename = filename;
-            }
-            Debug.WriteLine(DateTime.Now.ToString() + ": Finished SerializableBindingList.Load(string filename)");
-            return t;
-        }
-    }
     #endregion
 
     public class BulbEvent
@@ -116,71 +51,6 @@ namespace LIFX
     }
 
     #region Bulb Object Definition
-    [Serializable]
-    [XmlRoot("Bulbs")]
-    public class Bulbs : BindingList<LIFXBulb>
-    {
-        string filename;
-        public string Filename
-        {
-            get { return filename; }
-            set { filename = value; }
-        }
-        public void Save()
-        {
-            this.SaveAs(filename);
-        }
-        public void SaveAs(string filename)
-        {
-            if (this.Count > 0)
-            {
-                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
-                XmlSerializer x = new XmlSerializer(typeof(Bulbs));
-                ns.Add("", "");
-
-                StringWriter sw = new StringWriter();
-                XmlWriter writer = new XmlWriterNoDeclaration(sw);
-                x.Serialize(writer, this, ns);
-
-                StreamWriter fs = File.CreateText(filename);
-                fs.Write(sw.ToString());
-                fs.Close();
-            }
-        }
-        public static Bulbs Load(string filename)
-        {
-            Debug.WriteLine(DateTime.Now.ToString() + ": Entering Bulbs.Load(string filename)");
-            Bulbs t;
-            if (File.Exists(filename))
-            {
-                try
-                {
-                    XmlSerializer x = new XmlSerializer(typeof(Bulbs));
-                    using (StreamReader sr = new StreamReader(filename))
-                        t = (Bulbs)x.Deserialize(sr);
-                    t.Filename = filename;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(DateTime.Now.ToString() + ": Error deserializing '" + filename + "', bailing!");
-                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.Message);
-                    Debug.WriteLine(DateTime.Now.ToString() + ": " + ex.StackTrace);
-                    t = new Bulbs();
-                    t.Filename = filename;
-                }
-            }
-            else
-            {
-                t = new Bulbs();
-                t.Filename = filename;
-            }
-            Debug.WriteLine(DateTime.Now.ToString() + ": Finished SerializableBindingList.Load(string filename)");
-            return t;
-        }
-    }
-
-    [Serializable]
-    [XmlRoot("Bulb")]
     public class LIFXBulb
     {
         // Should not change for the life of the bulb object
@@ -206,7 +76,7 @@ namespace LIFX
 
         public LIFXBulb()
         {
-            BulbSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        BulbSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
         // Should only be changed by the object
@@ -411,10 +281,11 @@ namespace LIFX
             LIFXPacket packet = LIFXPacketFactory.Getpacket((UInt16)packetType, this);
             if (!BulbSocket.Connected)
             {
-                BulbSocket.Connect(BulbSocket.RemoteEndPoint);
+                if (BulbSocket.RemoteEndPoint!=null)
+                    BulbSocket.Connect(BulbSocket.RemoteEndPoint);
             }
             BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
-            //TODO Review if we need to get a confirming packet for the command.
+            // TODO Review if we need to get a confirming packet for the command.
             //if ((packetType == AppToBulb.SetBulbLabel) ||
             //packet = LIFXPacketFactory.Getpacket((UInt16)AppToBulb.GetLightState);
             //BulbSocket.Send(LIFXPacketFactory.PacketToBuffer(packet));
