@@ -367,46 +367,48 @@ namespace LIFX
         /// <param name="stateInfo"></param>
         public void PacketPump(Object stateInfo)
         {
-            if (!reEntrant)
+            try
             {
-                reEntrant = true;
-                LIFXBulb bulb = new LIFXBulb();
-                LIFXPacket packet = null;
-                byte[] readBuffer;
-                int readBytes;
-
-                foreach (BulbGateway gateway in tcpGateways)
+                if (!reEntrant)
                 {
-                    readBuffer = new byte[gateway.gateWaySocket.Available];
-                    readBytes = gateway.gateWaySocket.Receive(readBuffer);
-                    while (readBuffer.Length > 0)
-                    {
-                        try
-                        {
-                            packet = LIFXPacketFactory.Getpacket(readBuffer);
+                    reEntrant = true;
+                    LIFXBulb bulb = new LIFXBulb();
+                    LIFXPacket packet = null;
+                    byte[] readBuffer;
+                    int readBytes;
 
-                            if (!bulbs.Any(p => p.BulbMac.SequenceEqual(packet.target_mac_address)))
+                    foreach (BulbGateway gateway in tcpGateways)
+                    {
+                        readBuffer = new byte[gateway.gateWaySocket.Available];
+                        readBytes = gateway.gateWaySocket.Receive(readBuffer);
+                        while (readBuffer.Length > 0)
+                        {
+                            try
                             {
-                                switch (packet.packet_type)
-                                { 
-                                    case ((ushort) BulbToApp.LightStatus):
-                                        AddBulb((LIFX_LightStatus)packet, gateway.gateWaySocket);
-                                    break;
-                                    default:
-                                    //TODO need to do some logging
-                                    string hmm = "this really shouldn't happen";
-                                    break;
+                                packet = LIFXPacketFactory.Getpacket(readBuffer);
+
+                                if (!bulbs.Any(p => p.BulbMac.SequenceEqual(packet.target_mac_address)))
+                                {
+                                    switch (packet.packet_type)
+                                    {
+                                        case ((ushort)BulbToApp.LightStatus):
+                                            AddBulb((LIFX_LightStatus)packet, gateway.gateWaySocket);
+                                            break;
+                                        default:
+                                            //TODO need to do some logging
+                                            string hmm = "this really shouldn't happen";
+                                            break;
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                //if (packet is LIFX_LightStatus)
-                                //{
+                                else
+                                {
+                                    //if (packet is LIFX_LightStatus)
+                                    //{
                                     // Have to find out which one matches.
                                     foreach (LIFXBulb b in bulbs)
                                     {
                                         if (b.BulbMac.SequenceEqual(packet.target_mac_address))
-                                        { 
+                                        {
                                             // Now process packet type
                                             // First set batch mode to true to not try to set the incoming value on the bulb again
                                             bulb.BatchMode = true;
@@ -486,7 +488,7 @@ namespace LIFX
                                                     break;
                                                 case ((ushort)BulbToApp.Info):
                                                     LIFX_Info inf1 = (LIFX_Info)packet;
-                                                    bulb.time =inf1.time;
+                                                    bulb.time = inf1.time;
                                                     bulb.uptime = inf1.uptime;
                                                     bulb.downtime = inf1.downtime;
                                                     break;
@@ -503,27 +505,30 @@ namespace LIFX
                                             bulb.BatchMode = false;
                                         }
                                     }
-                                //}
+                                    //}
+                                }
+                                InPackets.Enqueue(LIFXPacketFactory.Getpacket(readBuffer));
                             }
-                            InPackets.Enqueue(LIFXPacketFactory.Getpacket(readBuffer));
-                        }
-                        catch (Exception e)
-                        { string etext = e.Message; }
-                        if (packet.size <= readBuffer.Length)
-                        {
-                            int remainingBuffer = readBuffer.Length - packet.size;
-                            byte[] newBuffer = new byte[remainingBuffer];
-                            Array.Copy(readBuffer, packet.size, newBuffer, 0, remainingBuffer);
-                            readBuffer = newBuffer;
-                        }
-                        else
-                        {
-                            readBuffer = new byte[0];
+                            catch (Exception e)
+                            { string etext = e.Message; }
+                            if (packet.size <= readBuffer.Length)
+                            {
+                                int remainingBuffer = readBuffer.Length - packet.size;
+                                byte[] newBuffer = new byte[remainingBuffer];
+                                Array.Copy(readBuffer, packet.size, newBuffer, 0, remainingBuffer);
+                                readBuffer = newBuffer;
+                            }
+                            else
+                            {
+                                readBuffer = new byte[0];
+                            }
                         }
                     }
+                    reEntrant = false;
                 }
-                reEntrant = false;
             }
+            catch (Exception ex)
+            { }
         }
     }
 }
